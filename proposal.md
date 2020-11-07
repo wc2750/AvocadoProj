@@ -7,7 +7,7 @@ Beibei Cao, Chenxi Liu, Renjie Wei, Weixi Chen
 Beibei Cao (bc2918)  
 Chenxi Liu (cl4044)  
 Renjie Wei (rw2844)  
-Weixi Chen (wc2750)  
+Weixi Chen (wc2750)
 
 **Tentative project title**:  
 Avocado Price Analysis and Prediction

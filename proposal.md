@@ -35,6 +35,7 @@ information purposefully.
   - General trends of avocado volume and price (by regions) over time
   - Interactive maps of prices vs. volumes and prices vs. region of
     avocado in the U.S
+  - The correlation of local GDP and avocado consumption (tentative)
   - Prediction model to accurately forecast avocado prices
 
 The final product will be a well-formatted website, including a video
@@ -43,10 +44,13 @@ interactive visualization, and prediction model.
 
 ## Data sources
 
-The dataset, updated till March, 2018, was compiled by Justin Kiggins
-who obtained the data source from [Hass Avocado
-Board](https://hassavocadoboard.com/). It can be accessed at
-[Kaggle](https://www.kaggle.com/neuromusic/avocado-prices).
+  - `Avocado price data`:
+    [Kaggle](https://www.kaggle.com/neuromusic/avocado-prices) (the
+    dataset, updated till March, 2018, was compiled by Justin Kiggins
+    who obtained the data source from [Hass Avocado
+    Board](https://hassavocadoboard.com/))
+  - `State GDP data`:
+    [Kaggle](https://www.kaggle.com/solorzano/gdp-per-capita-in-us-states?select=bea-gdp-by-state.csv)
 
 ## Planned analyses / visualizations / coding challenges
 

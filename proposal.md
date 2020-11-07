@@ -60,7 +60,8 @@ interactive visualization, and prediction model.
   - Visualizations will be used to show the interested trends and
     associations of the variables through `ggplot`. In addition, the
     plots will be displayed for interactivity on websites through
-    `plotly` and `shiny`.
+    `plotly` and `shiny`. The `autoplot` library may be used because it
+    allows us to see patterns between the different years.
   - Implementing several regression models based on our EDA and select
     the most accurate one for price prediction.
 

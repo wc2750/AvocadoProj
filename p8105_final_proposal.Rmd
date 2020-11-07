@@ -2,7 +2,7 @@
 title: "p8105_final_proposal"
 author: "Beibei Cao, Chenxi Liu, Renjie Wei, Weixi Chen"
 date: "11/6/2020"
-output: html_document
+output: github_document
 ---
 
 This is our proposal for p8105 final project.

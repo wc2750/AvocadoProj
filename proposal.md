@@ -25,9 +25,10 @@ avocado prices, we could gain more insights into its consumption pattern
 and further predict its impact on people’s life and health.
 
 We want to perform EDA to the original data and implement a prediction
-model of prices. We also intend to include interactive visualization
-tool that will enable people to check on time-base or region-base
-information purposefully.
+model of prices. The impact of GDP on local price and consumption of
+avocado will also be assessed. We also intend to include interactive
+visualization tool that will enable people to check on time-base or
+region-base information purposefully.
 
 ## Intended final products
 

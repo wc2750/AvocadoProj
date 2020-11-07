@@ -17,7 +17,7 @@ Avocado Price Analysis and Prediction
 ## Motivation
 Avocado has become a more preferable and healthy choice as a source of fat nutrition source. According to USDA, U.S. demand for avocados has increased steadily over the past two decades. Per capita consumption of avocados has tripled since 2001 to 8 pounds per person in 2018. We believe that by looking into influential factors and trends regarding avocado prices, we could gain more insights into its consumption pattern and further predict its impact on people's life and health. 
 
-We want to perform EDA to the original data and implement a prediction model of prices. We also intend to include interactive visualization tool that will enable people to check on time-base or region-base information purposefully.  
+We want to perform EDA to the original data and implement a prediction model of prices. The impact of GDP on local price and consumption of avocado will also be assessed. We also intend to include interactive visualization tool that will enable people to check on time-base or region-base information purposefully.  
 
 ## Intended final products
 * Quantified relationship between the size of an avocado and price

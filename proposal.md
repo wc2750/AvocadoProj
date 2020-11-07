@@ -21,8 +21,8 @@ fat nutrition source. According to USDA, U.S. demand for avocados has
 increased steadily over the past two decades. Per capita consumption of
 avocados has tripled since 2001 to 8 pounds per person in 2018. We
 believe that by looking into influential factors and trends regarding
-avocado prices, we could gain more insights into its consumption
-apattern and further predict its impact on people’s life and health.
+avocado prices, we could gain more insights into its consumption pattern
+and further predict its impact on people’s life and health.
 
 We want to perform EDA to the original data and implement a prediction
 model of prices. We also intend to include interactive visualization
@@ -35,6 +35,7 @@ information purposefully.
   - General trends of avocado volume and price (by regions) over time
   - Interactive maps of prices vs. volumes and prices vs. region of
     avocado in the U.S
+  - The correlation of local GDP and avocado consumption (tentative)
   - Prediction model to accurately forecast avocado prices
 
 The final product will be a well-formatted website, including a video
@@ -43,10 +44,13 @@ interactive visualization, and prediction model.
 
 ## Data sources
 
-The dataset, updated till March, 2018, was compiled by Justin Kiggins
-who obtained the data source from [Hass Avocado
-Board](https://hassavocadoboard.com/). It can be accessed at
-[Kaggle](https://www.kaggle.com/neuromusic/avocado-prices).
+  - `Avocado price data`:
+    [Kaggle](https://www.kaggle.com/neuromusic/avocado-prices) (the
+    dataset, updated till March, 2018, was compiled by Justin Kiggins
+    who obtained the data source from [Hass Avocado
+    Board](https://hassavocadoboard.com/))
+  - `State GDP data`:
+    [Kaggle](https://www.kaggle.com/solorzano/gdp-per-capita-in-us-states?select=bea-gdp-by-state.csv)
 
 ## Planned analyses / visualizations / coding challenges
 

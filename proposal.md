@@ -46,10 +46,10 @@ interactive visualization, and prediction model.
 ## Data sources
 
   - `Avocado price data`:
-    [Kaggle](https://www.kaggle.com/neuromusic/avocado-prices) (the
-    dataset, updated till March, 2018, was compiled by Justin Kiggins
-    who obtained the data source from [Hass Avocado
-    Board](https://hassavocadoboard.com/))
+    [Kaggle](https://www.kaggle.com/neuromusic/avocado-prices)
+      - The dataset, updated till March, 2018, was compiled by Justin
+        Kiggins who obtained the data source from [Hass Avocado
+        Board](https://hassavocadoboard.com/)
   - `State GDP data`:
     [Kaggle](https://www.kaggle.com/solorzano/gdp-per-capita-in-us-states?select=bea-gdp-by-state.csv)
 

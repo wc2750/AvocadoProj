@@ -35,3 +35,4 @@ The data will be cleaned, manipulated and summarized through `tidyverse`, `strin
 **Planned timeline**:\
 Nov 20: data analysis and visualization (trends and EDAs)\
 Dec 4: report, webpage, video screencast
+Dec 6: finalize

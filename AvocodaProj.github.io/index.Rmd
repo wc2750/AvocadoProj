@@ -1,0 +1,12 @@
+---
+title: "Avocado Price Analysis and Prediction"
+output: 
+  html_document:
+    navbar:
+      title: "Home"
+    toc: true
+    toc_float: true
+    code_folding: hide
+---
+
+Welcome!

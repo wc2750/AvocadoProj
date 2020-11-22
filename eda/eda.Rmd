@@ -1,11 +1,14 @@
 ---
-title: "Avocado Price Analysis and Prediction"
+title: "EDA"
 date: '`r format(Sys.time(), "%Y-%m-%d")`'
 output: github_document
 ---
 
 ```{r setup, include = FALSE}
 library(tidyverse)
+library(ggridges)
+library(patchwork)
+
 knitr::opts_chunk$set(
   warning = FALSE,
   message = FALSE
@@ -19,3 +22,75 @@ options(
 scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 ```
+
+Import avocado data. 
+```{r}
+avo_df = 
+  read_csv("data/avocado.csv") %>% 
+  janitor::clean_names() %>% 
+  select(-1) %>% 
+  separate(date, c("year", "month", "day")) %>% 
+  mutate(
+    year = as.integer(year),
+    month = as.integer(month),
+    day = as.integer(day)
+  ) %>% 
+  rename(
+    small = x4046,
+    large = x4225,
+    extra_large = x4770,
+  ) %>% 
+  pivot_longer(
+    small:extra_large,
+    names_to = "fruit_size",
+    values_to = "quantity_sold"
+  ) %>% 
+  pivot_longer(
+    total_bags:x_large_bags,
+    names_pattern = "(.*)_bags",
+    names_to = "bag_type",
+    values_to = "bag_sold",
+  ) %>% 
+  mutate(
+    bag_type = recode(bag_type, x_large = "extra_large")
+  )
+
+avo_df
+```
+
+Description: \
+`year`: 2015-2018 \
+`month`: 1-12 \
+`day`: 1-31 \
+`type`: conventional, organic \
+`fruit_size`: small, large, extra_large \
+`bag_type`: total, small, large, extra_large \
+
+```{r}
+gdp_df = 
+  read_csv("data/gdp-by-state.csv") %>% 
+  janitor::clean_names() %>% 
+  select(-1, -x2013, -x2014) %>% 
+  pivot_longer(
+    x2015:x2017,
+    names_prefix = "x",
+    names_to = "year",
+    values_to = "gdp"
+  )
+
+gdp_df
+```
+
+Description: \
+`year`: 2015-2017 \
+
+```{r}
+# number of regions slightly different  
+sort(unique(gdp_df$area))
+sort(unique(gdp_df$area))
+```
+
+
+
+
+

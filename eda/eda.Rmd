@@ -201,5 +201,41 @@ time_fig =
 ggplotly(time_fig)
 ```
 
+zhe ge tu you dian la ji ...
+Avocado Size vs. Volume Sold
+```{r}
+avo_df %>% 
+  group_by(year, month) %>% 
+  summarise(
+    sum_small = sum(small),
+    sum_large = sum(large),
+    sum_extra_large = sum(extra_large)
+    ) %>% 
+  pivot_longer(
+    sum_small:sum_extra_large,
+    names_to = "type",
+    values_to = "sum_volume",
+    names_prefix = "sum_"
+  ) %>% 
+  ggplot(aes(x = month, y = sum_volume, color = type, size = sum_volume)) + 
+  geom_point(alpha = 0.5) +
+  geom_smooth(alpha = 0.1, size = 0.5, se = FALSE) +
+  facet_grid(~year) +
+  labs(
+    title = "Avocado Size vs. Volume Consumption",
+    x = "Month",
+    y = "Volume Consumption",
+    color = "Fruit Size",
+    caption = "https://hassavocadoboard.com/"
+    ) + 
+  scale_x_continuous(
+    breaks = c(seq(1, 12, by = 3)),
+    labels = c(seq(1, 12, by = 3))
+    ) +
+  scale_size(guide = FALSE) +
+  scale_color_discrete(labels = c("Extra Large", "Large", "Small"))
+
+```
+
 
 

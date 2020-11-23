@@ -201,7 +201,7 @@ time_fig =
 ggplotly(time_fig)
 ```
 
-zhe ge tu you dian la ji ...
+zhe ge tu you dian la ji ... yan se ye gai bu liao bu zhi dao wei sha\
 Avocado Size vs. Volume Sold
 ```{r}
 avo_df %>% 
@@ -237,5 +237,23 @@ avo_df %>%
 
 ```
 
+Region vs. Year Average Volume Consumption
+```{r}
+avo_df %>% 
+  filter(year != 2018 & region != "TotalUS") %>% 
+  group_by(region, year) %>% 
+  summarise(year_sum = sum(total_volume)) %>% 
+  ungroup(year) %>% 
+  summarise(region_avg = mean(year_sum)) %>% 
+  mutate(
+    region = fct_reorder(region, region_avg) 
+  ) %>% 
+  plot_ly(x = ~region, y = ~region_avg, color = ~region, type = "bar", colors = "viridis") %>%
+  layout(
+    xaxis = list(title = "Region"),
+    yaxis = list(title = "Average Volume Consumption"),
+    title = "Region vs. Average Year Consumption"
+  )
+```
 
 

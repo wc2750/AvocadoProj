@@ -105,7 +105,7 @@ fao.org/faostat/en/#search/Avocados
 https://quickstats.nass.usda.gov/results/8A9760E3-BDB0-3A88-B014-DA81BA0845BD
 
 Volume consumption by year: conventional vs. organic
-```{r fig.width = 5, fig.height=5}
+```{r }
 fig1 = 
   avo_df %>% 
   group_by(year, type) %>% 
@@ -113,7 +113,7 @@ fig1 =
   ggplot(aes(x = year, y = sum_volume, fill = type)) +
   geom_bar(stat="identity") +
   labs(
-    title = "Conventioanl vs. Organic",
+    title = "United States Avocado Consumption (2015-2018)",
     x = "Year",
     y = "Volume Consumption",
     color = "Type"
@@ -130,9 +130,8 @@ fig2 =
   coord_polar("y", start=0) +
   theme_void() + # remove background, grid, numeric labels
   labs(
-    title = "United States Avocado Consumption (2015-2018)",
     fill = "Type",
-     caption = "https://hassavocadoboard.com/"
+    caption = "https://hassavocadoboard.com/"
     ) +
   scale_fill_viridis_d(direction = -1)
 

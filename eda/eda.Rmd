@@ -30,7 +30,7 @@ avo_df =
   read_csv("data/avocado.csv") %>% 
   janitor::clean_names() %>% 
   select(-1) %>% 
-  separate(date, c("year", "month", "day")) %>% 
+  separate(date, c("year", "month", "day"), remove = FALSE) %>% 
   mutate(
     year = as.integer(year),
     month = as.integer(month),
@@ -138,6 +138,56 @@ avo_df %>%
   ) 
 
 # the region we have is not state mostly ..
+```
+
+Time vs. Avocado Consumption by Region
+```{r}
+time_fig = 
+  avo_df %>% 
+  group_by(year, month, region) %>% 
+  summarise(sum_volume = sum(total_volume)) %>% 
+  ggplot(aes(x = month, y = sum_volume, color = region)) +
+  geom_point(size = 0.5) +
+  geom_smooth(size = 0.3, se = FALSE) + 
+  facet_grid(~year) +
+  labs(
+    title = "Time vs. Avocado Consumption by Region",
+    x = "Month",
+    y = "Volume Consumption",
+    color = "Region",
+    caption = "https://hassavocadoboard.com/"
+    ) + 
+  scale_x_continuous(
+    breaks = c(seq(1, 12, by = 3)),
+    labels = c(seq(1, 12, by = 3))
+    ) 
+
+ggplotly(time_fig)
+```
+
+Time vs. Avocado Price by Region
+```{r}
+time_fig = 
+  avo_df %>% 
+  group_by(year, month, region) %>% 
+  summarise(mean_price = mean(average_price)) %>% 
+  ggplot(aes(x = month, y = mean_price, color = region)) +
+  geom_point(size = 0.5) +
+  geom_smooth(size = 0.3, se = FALSE) + 
+  facet_grid(~year) +
+  labs(
+    title = "Time vs. Avocado Price by Region",
+    x = "Month",
+    y = "Average Price",
+    color = "Region",
+    caption = "https://hassavocadoboard.com/"
+    ) + 
+  scale_x_continuous(
+    breaks = c(seq(1, 12, by = 3)),
+    labels = c(seq(1, 12, by = 3))
+    ) 
+
+ggplotly(time_fig)
 ```
 
 

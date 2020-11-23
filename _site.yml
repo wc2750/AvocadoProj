@@ -1,0 +1,18 @@
+name: "Yay internet!"
+output_dir: "."
+navbar:
+  title: "Home"
+  right:
+    - text: "Trend Graphs"
+      href: general.html
+    - text: "Regression Analysis"
+      href: regression.html
+    - text: "Resource"
+      href: resource.html
+    - text: "Interactive Map"
+      href: map.html
+    - icon: fa-github fa-lg
+      href: https://github.com/wc2750/AvocadoProj.github.io
+output:
+  html_document:
+    theme: journal

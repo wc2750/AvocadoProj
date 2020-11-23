@@ -9,4 +9,41 @@ output:
     code_folding: hide
 ---
 
-Welcome!
+<center>
+
+![](homepaage.png){width=500px}
+</center>
+
+<br>
+
+# Screencast Introduction
+
+
+# Introduction
+Avocado has become a more preferable and healthy choice as a source of fat nutrition source. According to USDA, U.S. demand for avocados has increased steadily over the past two decades. Per capita consumption of avocados has tripled since 2001 to 8 pounds per person in 2018. We believe that by looking into influential factors and trends regarding avocado prices, we could gain more insights into its consumption pattern and further predict its impact on people's life and health. 
+
+We want to perform EDA to the original data and implement a prediction model of prices. The impact of GDP on local price and consumption of avocado will also be assessed. We also intend to include interactive visualization tool that will enable people to check on time-base or region-base information purposefully.  
+
+# Data
+* `Avocado price data`: [Kaggle](https://www.kaggle.com/neuromusic/avocado-prices) 
+  + The dataset, updated till March, 2018, was compiled by Justin Kiggins who obtained the data source from [Hass Avocado Board](https://hassavocadoboard.com/)
+* `State GDP data`: [Kaggle](https://www.kaggle.com/solorzano/gdp-per-capita-in-us-states?select=bea-gdp-by-state.csv)
+
+
+# Findings
+
+
+# Report
+Our report can be found [here](report.html).
+
+
+# Website Navigation
+- **Trend Graphs**: Graphs of our Main Interest
+- **Regression Analysis**: Detailed Analysis Report
+- **Resource**: Resource for Suicide Prevention
+
+# Contributors
+- BeiBei Cao | [Website](https://bc2918.github.io/)
+- Chenxi Liu | [Website](https://chenxi-liu233.github.io/)
+- Renjie Wei | [Website](https://mefimefi.github.io//)
+- Weixi Chen | [Website](https://wc2750.github.io/)

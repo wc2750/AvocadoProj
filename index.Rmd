@@ -6,7 +6,6 @@ output:
       title: "Home"
     toc: true
     toc_float: true
-    code_folding: hide
 ---
 
 <center>

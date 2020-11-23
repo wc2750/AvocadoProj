@@ -1,6 +1,6 @@
 EDA
 ================
-2020-11-21
+2020-11-22
 
 Import avocado data.
 
@@ -19,7 +19,10 @@ avo_df =
     small = x4046,
     large = x4225,
     extra_large = x4770,
-  ) %>% 
+  ) 
+
+avo_tidy = 
+  avo_df %>% 
   pivot_longer(
     small:extra_large,
     names_to = "fruit_size",
@@ -35,7 +38,7 @@ avo_df =
     bag_type = recode(bag_type, x_large = "extra_large")
   )
 
-avo_df
+avo_tidy
 ```
 
     ## # A tibble: 218,988 x 11
@@ -95,53 +98,34 @@ gdp_df
 Description:  
 `year`: 2015-2017  
 
-``` r
-# number of regions slightly different  
-sort(unique(gdp_df$area))
-```
+wo jue de ke yi zhao you guan xi de che yi che ?
+<https://www.medicalnewstoday.com/articles/270406#benefits>
+<https://pdf.usaid.gov/pdf_docs/PA00KP28.pdf>
 
-    ##  [1] "Alabama"              "Alaska"               "Arizona"             
-    ##  [4] "Arkansas"             "California"           "Colorado"            
-    ##  [7] "Connecticut"          "Delaware"             "District of Columbia"
-    ## [10] "Far West"             "Florida"              "Georgia"             
-    ## [13] "Great Lakes"          "Hawaii"               "Idaho"               
-    ## [16] "Illinois"             "Indiana"              "Iowa"                
-    ## [19] "Kansas"               "Kentucky"             "Louisiana"           
-    ## [22] "Maine"                "Maryland"             "Massachusetts"       
-    ## [25] "Michigan"             "Mideast"              "Minnesota"           
-    ## [28] "Mississippi"          "Missouri"             "Montana"             
-    ## [31] "Nebraska"             "Nevada"               "New England"         
-    ## [34] "New Hampshire"        "New Jersey"           "New Mexico"          
-    ## [37] "New York"             "North Carolina"       "North Dakota"        
-    ## [40] "Ohio"                 "Oklahoma"             "Oregon"              
-    ## [43] "Pennsylvania"         "Plains"               "Rhode Island"        
-    ## [46] "Rocky Mountain"       "South Carolina"       "South Dakota"        
-    ## [49] "Southeast"            "Southwest"            "Tennessee"           
-    ## [52] "Texas"                "United States"        "Utah"                
-    ## [55] "Vermont"              "Virginia"             "Washington"          
-    ## [58] "West Virginia"        "Wisconsin"            "Wyoming"
+yao bu zhe li zai gao dian data fao.org/faostat/en/\#search/Avocados
+
+<https://quickstats.nass.usda.gov/results/8A9760E3-BDB0-3A88-B014-DA81BA0845BD>
+
+Volume consumption by year: conventional vs. organic
 
 ``` r
-sort(unique(gdp_df$area))
-```
+bar_plot =
+  avo_df %>% 
+  group_by(year, type) %>% 
+  summarise(sum_volume = sum(total_volume)) %>% 
+  pivot_wider(
+    names_from = type,
+    values_from = sum_volume
+  ) %>% 
+  plot_ly(x = ~year, y = ~conventional, type = 'bar', name = 'Conventional') %>% 
+  add_trace(y = ~organic, name = 'Organic') %>% 
+  layout(yaxis = list(title = 'Volume Consumption'), barmode = 'stack', 
+         title = "Conventional vs. Organic")
 
-    ##  [1] "Alabama"              "Alaska"               "Arizona"             
-    ##  [4] "Arkansas"             "California"           "Colorado"            
-    ##  [7] "Connecticut"          "Delaware"             "District of Columbia"
-    ## [10] "Far West"             "Florida"              "Georgia"             
-    ## [13] "Great Lakes"          "Hawaii"               "Idaho"               
-    ## [16] "Illinois"             "Indiana"              "Iowa"                
-    ## [19] "Kansas"               "Kentucky"             "Louisiana"           
-    ## [22] "Maine"                "Maryland"             "Massachusetts"       
-    ## [25] "Michigan"             "Mideast"              "Minnesota"           
-    ## [28] "Mississippi"          "Missouri"             "Montana"             
-    ## [31] "Nebraska"             "Nevada"               "New England"         
-    ## [34] "New Hampshire"        "New Jersey"           "New Mexico"          
-    ## [37] "New York"             "North Carolina"       "North Dakota"        
-    ## [40] "Ohio"                 "Oklahoma"             "Oregon"              
-    ## [43] "Pennsylvania"         "Plains"               "Rhode Island"        
-    ## [46] "Rocky Mountain"       "South Carolina"       "South Dakota"        
-    ## [49] "Southeast"            "Southwest"            "Tennessee"           
-    ## [52] "Texas"                "United States"        "Utah"                
-    ## [55] "Vermont"              "Virginia"             "Washington"          
-    ## [58] "West Virginia"        "Wisconsin"            "Wyoming"
+pie_plot = 
+  avo_df %>% 
+  group_by(type) %>% 
+  summarise(sum_volume = sum(total_volume)) %>% 
+  plot_ly(labels = ~type, values = ~sum_volume, type = 'pie') %>% 
+  layout(title = 'United States Avocado Consumption (2015-2018)',  showlegend = FALSE)
+```

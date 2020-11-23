@@ -10,6 +10,17 @@ library(tidyverse)
 library(ggridges)
 library(patchwork)
 library(plotly)
+library(skimr)
+library(rpart)
+library(corrplot)
+library(tibbletime)
+library(lubridate)
+library(smooth)
+library(grid)
+library(gridExtra)
+library(magrittr)
+library(cowplot)
+library(ggthemes)
 
 knitr::opts_chunk$set(
   warning = FALSE,
@@ -17,19 +28,13 @@ knitr::opts_chunk$set(
   echo = F
 )
 
-options(
-  ggplot2.continuous.colour = "viridis",
-  ggplot2.continuous.fill = "viridis"
-)
 
-scale_colour_discrete = scale_colour_viridis_d
-scale_fill_discrete = scale_fill_viridis_d
 ```
 
 
 From Renjie, trying to do more fancy plots and interactive maps.
 
-# read and clean
+
 ```{r }
 # from Beibei
 avo_df = 
@@ -65,11 +70,23 @@ avo_tidy =
     bag_type = recode(bag_type, x_large = "extra_large")
   )
 
-avo_tidy
 ```
 
 
-## Price vs type
+# Types of Avocados:
+
+In this section we will analyze the different types of avocados that we have in this dataset. Basically, we have two types of avocados:
+
+  + Conventional
+  + Organic
+  
+**Summary:**
+
+  + Organic avocados: Based on the price changes throughout time we can see that they are more expensive.
+  + Conventional avocados: Based on price changes throughout time we can see that they are less expensive.
+
+## Trend in Price:
+
 ```{r price_vs_type}
 avo_df %>% 
   ggplot(aes(x=average_price, fill=type)) + 
@@ -81,10 +98,6 @@ avo_df %>%
 
 ```
 
-
-## Price trend in diff types
-
-this can be change in to ploty
 
 ```{r price_trend_by_type}
 # Sort the dates
@@ -99,5 +112,74 @@ price_trend <-
   theme_minimal()
 
 price_trend
+
+
+ggplot(data = avo_df, aes(x = date, y = average_price, col=type)) +
+  geom_line() +
+  facet_wrap(~ type) + 
+  theme_minimal() + theme(legend.position="bottom") +
+  theme_minimal()
 ```
+
+
+## Relationship between Prices and Total Volume:
+
+贝贝做过了说辣鸡的是这个么...
+
+```{r volume_price}
+# filter dataset
+
+organic <- avo_df %>% select(date, average_price, type, total_volume) %>% filter(type == "organic")
+conventional <- avo_df %>% select(date, average_price, type, total_volume) %>% filter(type == "conventional")
+
+
+organic <- as_tbl_time(organic, index=date)
+organic <- as_period(organic, '1 month')
+
+conventional <- as_tbl_time(conventional, index=date)
+conventional <- as_period(conventional, '1 month')
+```
+
+```{r price_volume_plot}
+conventional_monthly <- 
+  conventional %>%
+ggplot(aes(x=date, y=average_price)) + 
+  geom_line(color="#7FB3D5") + 
+  theme(plot.title=element_text(hjust=0.5), plot.background=element_rect(fill="#D5D8DC")) + 
+  labs(title="Conventional Avocados") + geom_hline(yintercept=max(conventional$average_price), linetype="dashed", color = "red") + 
+  geom_hline(yintercept=min(conventional$average_price), linetype="dashed", color = "blue") +
+  theme_minimal()
+
+
+conventional_volume <- 
+  conventional %>%
+  ggplot(aes(x=date, y=total_volume)) + 
+  geom_bar(stat='identity', fill="#7FB3D5", color="black") + 
+  theme(plot.title=element_text(hjust=0.5), plot.background=element_rect(fill="#D5D8DC")) +
+  geom_smooth(method="loess", color="red") +
+  theme_minimal()
+
+organic_monthly <- 
+  organic %>% 
+  ggplot(aes(x=date, y=average_price)) + 
+  geom_line(color="#58D68D") + 
+  theme(plot.title=element_text(hjust=0.5), plot.background=element_rect(fill="#D5D8DC")) + 
+  labs(title="Organic Avocados") + geom_hline(yintercept=max(organic$average_price), linetype="dashed", color = "red") + 
+  geom_hline(yintercept=min(organic$average_price), linetype="dashed", color = "blue") +
+  theme_minimal()
+
+organic_volume <- 
+  organic %>%
+  ggplot(aes(x=date, y=total_volume)) + 
+  geom_bar(stat='identity', fill="#58D68D",color="black") + 
+  theme(plot.title=element_text(hjust=0.5), plot.background=element_rect(fill="#D5D8DC")) +
+  geom_smooth(method="loess", color="red") +
+  theme_minimal()
+
+plot_grid(conventional_monthly, organic_monthly,conventional_volume, organic_volume, nrow=2, ncol=2)
+```
+
+
+
+
 

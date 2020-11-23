@@ -1,0 +1,103 @@
+---
+title: "plots_maps"
+author: "Renjie Wei"
+date: "11/23/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(ggridges)
+library(patchwork)
+library(plotly)
+
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE,
+  echo = F
+)
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+```
+
+
+From Renjie, trying to do more fancy plots and interactive maps.
+
+# read and clean
+```{r }
+# from Beibei
+avo_df = 
+  read_csv("data/avocado.csv") %>% 
+  janitor::clean_names() %>% 
+  select(-1) %>% 
+  separate(date, c("year", "month", "day"), remove = FALSE) %>% 
+  mutate(
+    year = as.integer(year),
+    month = as.integer(month),
+    day = as.integer(day)
+  ) %>% 
+  rename(
+    small = x4046,
+    large = x4225,
+    extra_large = x4770,
+  ) 
+
+avo_tidy = 
+  avo_df %>% 
+  pivot_longer(
+    small:extra_large,
+    names_to = "fruit_size",
+    values_to = "quantity_sold"
+  ) %>% 
+  pivot_longer(
+    total_bags:x_large_bags,
+    names_pattern = "(.*)_bags",
+    names_to = "bag_type",
+    values_to = "bag_sold",
+  ) %>% 
+  mutate(
+    bag_type = recode(bag_type, x_large = "extra_large")
+  )
+
+avo_tidy
+```
+
+
+## Price vs type
+```{r price_vs_type}
+avo_df %>% 
+  ggplot(aes(x=average_price, fill=type)) + 
+  geom_density() + 
+  facet_wrap(~type) + 
+  theme_minimal() + 
+  theme(plot.title=element_text(hjust=0.5), legend.position="bottom") + 
+  labs(title="Avocado Price by Type") 
+
+```
+
+
+## Price trend in diff types
+
+this can be change in to ploty
+
+```{r price_trend_by_type}
+# Sort the dates
+avo_df <- avo_df[order(as.Date(avo_df$date, format="%Y-%m-%d")),]
+
+
+price_trend <- 
+  avo_df %>% 
+  select(date, average_price, type) %>%
+  ggplot(aes(x=date, y=average_price)) +
+  geom_area(aes(color=type, fill=type), alpha = 0.3, position = position_dodge(0.8)) + 
+  theme_minimal()
+
+price_trend
+```
+

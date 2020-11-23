@@ -1,0 +1,260 @@
+---
+title: "EDA"
+date: '`r format(Sys.time(), "%Y-%m-%d")`'
+output: html_document
+---
+
+```{r setup, include = FALSE}
+library(tidyverse)
+library(ggridges)
+library(patchwork)
+library(plotly)
+
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE,
+  echo = F
+)
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+```
+
+Import avocado data. 
+```{r}
+avo_df = 
+  read_csv("data/avocado.csv") %>% 
+  janitor::clean_names() %>% 
+  select(-1) %>% 
+  separate(date, c("year", "month", "day"), remove = FALSE) %>% 
+  mutate(
+    year = as.integer(year),
+    month = as.integer(month),
+    day = as.integer(day)
+  ) %>% 
+  rename(
+    small = x4046,
+    large = x4225,
+    extra_large = x4770,
+  ) 
+
+avo_tidy = 
+  avo_df %>% 
+  pivot_longer(
+    small:extra_large,
+    names_to = "fruit_size",
+    values_to = "quantity_sold"
+  ) %>% 
+  pivot_longer(
+    total_bags:x_large_bags,
+    names_pattern = "(.*)_bags",
+    names_to = "bag_type",
+    values_to = "bag_sold",
+  ) %>% 
+  mutate(
+    bag_type = recode(bag_type, x_large = "extra_large")
+  )
+
+avo_tidy
+```
+
+Description: \
+`year`: 2015-2018 \
+`month`: 1-12 \
+`day`: 1-31 \
+`type`: conventional, organic \
+`fruit_size`: small, large, extra_large \
+`bag_type`: total, small, large, extra_large \
+
+```{r}
+gdp_df = 
+  read_csv("data/gdp-by-state.csv") %>% 
+  janitor::clean_names() %>% 
+  select(-1, -x2013, -x2014) %>% 
+  pivot_longer(
+    x2015:x2017,
+    names_prefix = "x",
+    names_to = "year",
+    values_to = "gdp"
+  )
+
+gdp_df
+```
+
+Description: \
+`year`: 2015-2017 \
+
+```{r include=FALSE}
+# number of regions slightly different  
+sort(unique(gdp_df$area))
+sort(unique(gdp_df$area))
+```
+
+wo jue de ke yi zhao you guan xi de che yi che ?
+https://www.medicalnewstoday.com/articles/270406#benefits
+https://pdf.usaid.gov/pdf_docs/PA00KP28.pdf
+
+yao bu zhe li zai gao dian data 
+fao.org/faostat/en/#search/Avocados
+
+
+https://quickstats.nass.usda.gov/results/8A9760E3-BDB0-3A88-B014-DA81BA0845BD
+
+Volume consumption by year: conventional vs. organic
+```{r }
+fig1 = 
+  avo_df %>% 
+  group_by(year, type) %>% 
+  summarise(sum_volume = sum(total_volume)) %>% 
+  ggplot(aes(x = year, y = sum_volume, fill = type)) +
+  geom_bar(stat="identity") +
+  labs(
+    title = "United States Avocado Consumption (2015-2018)",
+    x = "Year",
+    y = "Volume Consumption",
+    color = "Type"
+    ) + 
+  scale_fill_viridis_d(direction = -1) +
+  theme(legend.position = "none")
+
+fig2 =
+  avo_df %>% 
+  group_by(type) %>% 
+  summarise(sum_volume = sum(total_volume)) %>%
+  ggplot(aes(x="", y=sum_volume, fill=type)) +
+  geom_bar(stat="identity", width=1, color = "white") +
+  coord_polar("y", start=0) +
+  theme_void() + # remove background, grid, numeric labels
+  labs(
+    fill = "Type",
+    caption = "https://hassavocadoboard.com/"
+    ) +
+  scale_fill_viridis_d(direction = -1)
+
+fig1 + fig2
+```
+
+
+```{r include=FALSE}
+avo_df %>% 
+  filter(year == 2015) %>% 
+  group_by(region) %>% 
+  summarise(region_volume = sum(total_volume)) %>% 
+  mutate(
+    code = state.abb[match(region,state.name)] 
+  ) 
+
+# the region we have is not state mostly ..
+```
+
+Time vs. Avocado Consumption by Region
+```{r}
+time_fig = 
+  avo_df %>% 
+  group_by(year, month, region) %>% 
+  summarise(sum_volume = sum(total_volume)) %>% 
+  ggplot(aes(x = month, y = sum_volume, color = region)) +
+  geom_point(size = 0.5) +
+  geom_smooth(size = 0.3, se = FALSE) + 
+  facet_grid(~year) +
+  labs(
+    title = "Time vs. Avocado Consumption by Region",
+    x = "Month",
+    y = "Volume Consumption",
+    color = "Region",
+    caption = "https://hassavocadoboard.com/"
+    ) + 
+  scale_x_continuous(
+    breaks = c(seq(1, 12, by = 3)),
+    labels = c(seq(1, 12, by = 3))
+    ) 
+
+ggplotly(time_fig)
+```
+
+Time vs. Avocado Price by Region
+```{r}
+time_fig = 
+  avo_df %>% 
+  group_by(year, month, region) %>% 
+  summarise(mean_price = mean(average_price)) %>% 
+  ggplot(aes(x = month, y = mean_price, color = region)) +
+  geom_point(size = 0.5) +
+  geom_smooth(size = 0.3, se = FALSE) + 
+  facet_grid(~year) +
+  labs(
+    title = "Time vs. Avocado Price by Region",
+    x = "Month",
+    y = "Average Price",
+    color = "Region",
+    caption = "https://hassavocadoboard.com/"
+    ) + 
+  scale_x_continuous(
+    breaks = c(seq(1, 12, by = 3)),
+    labels = c(seq(1, 12, by = 3))
+    ) 
+
+ggplotly(time_fig)
+```
+
+zhe ge tu you dian la ji ... yan se ye gai bu liao bu zhi dao wei sha\
+Avocado Size vs. Volume Sold
+```{r}
+avo_df %>% 
+  group_by(year, month) %>% 
+  summarise(
+    sum_small = sum(small),
+    sum_large = sum(large),
+    sum_extra_large = sum(extra_large)
+    ) %>% 
+  pivot_longer(
+    sum_small:sum_extra_large,
+    names_to = "type",
+    values_to = "sum_volume",
+    names_prefix = "sum_"
+  ) %>% 
+  ggplot(aes(x = month, y = sum_volume, color = type, size = sum_volume)) + 
+  geom_point(alpha = 0.5) +
+  geom_smooth(alpha = 0.1, size = 0.5, se = FALSE) +
+  facet_grid(~year) +
+  labs(
+    title = "Avocado Size vs. Volume Consumption",
+    x = "Month",
+    y = "Volume Consumption",
+    color = "Fruit Size",
+    caption = "https://hassavocadoboard.com/"
+    ) + 
+  scale_x_continuous(
+    breaks = c(seq(1, 12, by = 3)),
+    labels = c(seq(1, 12, by = 3))
+    ) +
+  scale_size(guide = FALSE) +
+  scale_color_discrete(labels = c("Extra Large", "Large", "Small"))
+
+```
+
+Region vs. Year Average Volume Consumption
+```{r}
+avo_df %>% 
+  filter(year != 2018 & region != "TotalUS") %>% 
+  group_by(region, year) %>% 
+  summarise(year_sum = sum(total_volume)) %>% 
+  ungroup(year) %>% 
+  summarise(region_avg = mean(year_sum)) %>% 
+  mutate(
+    region = fct_reorder(region, region_avg) 
+  ) %>% 
+  plot_ly(x = ~region, y = ~region_avg, color = ~region, type = "bar", colors = "viridis") %>%
+  layout(
+    xaxis = list(title = "Region"),
+    yaxis = list(title = "Average Volume Consumption"),
+    title = "Region vs. Average Year Consumption"
+  )
+```
+
+

@@ -284,3 +284,66 @@ org_pat_yearly =
 plot_grid(conv_pat_yearly, org_pat_yearly, nrow=2)
 ```
 
+Make some barplots to show the changes between year.
+
+
+```{r diff_bar}
+r_avg = 
+  seasonal_df %>% 
+  group_by(year, monthabb) %>%  
+  select(type, year, monthabb, average_price) %>% 
+  filter(type == "conventional", year == c("2015", "2016", "2017")) %>%
+  group_by(year, monthabb) %>%
+  summarize(avg=mean(average_price))
+
+
+
+wider_df =
+  r_avg %>% 
+  pivot_wider(
+    names_from = year,
+    values_from = avg
+  )
+
+
+colnames(wider_df) = c("Months", "First_year", "Second_year", "Third_year")
+
+wider_df = 
+  wider_df %>% 
+  mutate(
+    first_pct = (Second_year - First_year)/ First_year,
+    second_pct = (Third_year - Second_year)/ Second_year,
+    first_sign = ifelse(first_pct > 0, "Positive", "Negative"),
+    second_sign = ifelse(second_pct > 0, "Positive", "Negative")
+  )
+
+
+pct_dif_1 =
+  wider_df %>% 
+  select(Months, first_pct, first_sign) %>%
+  ggplot(aes(fill=first_sign)) + 
+  geom_bar(stat='identity', aes(x = Months, y = round(first_pct,4) * 100)) + 
+  theme_minimal() + 
+  theme(axis.text.x=element_text(angle=90), legend.position="bottom") + 
+  labs(x="Month", y="Difference(%)") + 
+  guides(fill=guide_legend(title="Diff Status")) + 
+  scale_fill_manual(values=c("#EB7A77", "#91AD70")) +
+  labs(title="Conventional Avocado Price changes \n (2015 - 2016)", x="Months", y="Price")
+
+pct_dif_2 =
+  wider_df %>% 
+  select(Months, second_pct, second_sign) %>%
+  ggplot(aes(fill=second_sign)) + 
+  geom_bar(stat='identity', aes(x = Months, y = round(second_pct,4) * 100)) + 
+  theme_minimal() + 
+  theme(axis.text.x=element_text(angle=90), legend.position="bottom") + 
+  labs(x="Month", y="Difference(%)") + 
+  guides(fill=guide_legend(title="Diff Status")) + 
+  scale_fill_manual(values=c("#EB7A77", "#91AD70")) +
+  labs(title="Conventional Avocado Price changes \n (2016 - 2017)", x="Months", y="Price")
+
+
+
+plot_grid(pct_dif_1, pct_dif_2, ncol=2)
+```
+

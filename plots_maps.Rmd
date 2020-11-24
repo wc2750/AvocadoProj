@@ -22,6 +22,16 @@ library(magrittr)
 library(cowplot)
 library(ggthemes)
 
+
+library(broom)
+library(highcharter)
+library(rworldmap)
+library(gganimate)
+library(transformr)
+library(corrplot)
+library(leaps)
+library(kableExtra)
+
 knitr::opts_chunk$set(
   warning = FALSE,
   message = FALSE,

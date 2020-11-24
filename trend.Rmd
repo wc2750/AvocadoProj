@@ -86,7 +86,6 @@ price_trend <-
   guides(color = FALSE) + 
   scale_fill_manual(values=c(conv_color, org_color)) +
   scale_color_manual(values=c(conv_color, org_color)) 
-
 price_trend
 ```
 

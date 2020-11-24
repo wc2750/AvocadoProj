@@ -1,5 +1,5 @@
 ---
-title: "Prediction Analysis"
+title: "ML Price Prediction"
 output: 
   html_document:
     toc: true
@@ -40,25 +40,22 @@ avo_df =
 
 
 ## Use Prophet Machine Learning Model to Predict Price
-```{r, cache=TRUE, message=FALSE}
+```{r, cache=TRUE}
 avo_df_sub = avo_df %>% 
-  filter(region == "TotalUS") %>%
   select(date, average_price) %>%
-  rename(ds = date, y = average_price) %>%
-  mutate(ds = as.factor(ds))
+  rename(ds = date, y = average_price)
 
 mod <- prophet(avo_df_sub,  changepoint.prior.scale = 0.5)
 future <- make_future_dataframe(mod, periods = 365)
-# tail(future)
+tail(future)
 forecast <- predict(mod, future)
 plot(mod, forecast, xlabel = "Date",
-ylabel = "Average Price",
-title = "Prediction of prices in one year")
+ylabel = "Average Price")
 ```
 
 ## The components of the model affect our predictions.
-```{r, cache=TRUE, message=FALSE}
-prophet_plot_components(mod, forecast)
+```{r, cache=TRUE}
+prophet_plot_components(forecast)
 ```
 
 

@@ -60,6 +60,9 @@ avo_df =
 
 conv_color = "#F17C67"
 org_color = "#7BA23F"
+
+#install.packages('gifski')
+#install.packages('png')
 ```
 
 ## Organic vs. Conventional 
@@ -77,7 +80,7 @@ price_trend <-
   geom_area(alpha = 0.3, position = position_dodge(0.8)) + 
   theme_minimal() +
   labs(
-    title = "Time vs. Avocado Price by Typen",
+    title = "Time vs. Avocado Price by Type",
     x = "Time",
     y = "Average Price",
     fill = "Type"
@@ -85,12 +88,14 @@ price_trend <-
   ) +
   guides(color = FALSE) + 
   scale_fill_manual(values=c(conv_color, org_color)) +
-  scale_color_manual(values=c(conv_color, org_color)) 
+  scale_color_manual(values=c(conv_color, org_color)) +
+  transition_reveal(date)
+
 price_trend
 ```
 
 The conventional avocado still takes over the market with lower prices, but the share of organic avocado was increasing slightly year by year.
-![](trend_2.png){}
+![](trend_2.png)
 ```{r market_pie_plot, include=FALSE}
 avo_df %>% 
   group_by(year, type) %>% 
@@ -106,10 +111,11 @@ avo_df %>%
   coord_polar("y", start=0) +
   theme_void() + # remove background, grid, numeric labels
   labs(
+    title = "Avocado Consumption by Type",
     fill = "Type"
     ) + 
-  scale_fill_manual(values=c(conv_color, org_color)) +
-  facet_grid(~year) 
+  scale_fill_manual(values=c(conv_color, org_color)) + 
+  facet_wrap(~year, strip.position="bottom", nrow = 1) 
 ```
 
 ## Avocado Price in US over time
@@ -137,7 +143,9 @@ conv_pat_yearly =
   facet_wrap(~as.factor(year)) + 
   theme_minimal() + 
   theme(plot.title=element_text(hjust=0.5), axis.text.x = element_text(angle = 90)) + 
-  labs(title="Seasonal Fluctuations \n Convenctional Avocados", x="Month", y="Average Price")
+  labs(title="Seasonal Fluctuations \n Convenctional Avocados", x="Month", y="Average Price") 
+
+
 
 org_pat_yearly =
   seasonal_df %>% 
@@ -151,9 +159,8 @@ org_pat_yearly =
   facet_wrap(~as.factor(year)) + 
   theme_minimal() + 
   theme(plot.title=element_text(hjust=0.5), axis.text.x = element_text(angle = 90)) +
-  labs(title="Seasonal Fluctuations \n Convenctional Avocados", x="Month", y="Average Price")
+  labs(title="Seasonal Fluctuations \n Convenctional Avocados", x="Month", y="Average Price") 
 
- 
 
 plot_grid(conv_pat_yearly, org_pat_yearly, nrow=2)
 ```
@@ -177,12 +184,13 @@ conventional <- as_period(conventional, '1 month')
 ```{r price_volume_plot}
 conventional_monthly <- 
   conventional %>%
-ggplot(aes(x=date, y=average_price)) + 
+  ggplot(aes(x=date, y=average_price)) + 
   geom_line(color=conv_color) + 
   theme(plot.title=element_text(hjust=0.5)) + 
   labs(title="Conventional Avocados", x= "Time", y="Average Price") + geom_hline(yintercept=max(conventional$average_price), linetype="dashed", color = "red") + 
   geom_hline(yintercept=min(conventional$average_price), linetype="dashed", color = "blue") +
   theme_minimal() 
+#+ transition_reveal(date)
 
 conventional_volume <- 
   conventional %>%
@@ -191,7 +199,7 @@ conventional_volume <-
   theme(plot.title=element_text(hjust=0.5)) +
   labs(x= "Time", y="Average Volume") +
   geom_smooth(method="loess", color="red") +
-  theme_minimal()
+  theme_minimal() 
 
 organic_monthly <- 
   organic %>% 
@@ -200,7 +208,9 @@ organic_monthly <-
   theme(plot.title=element_text(hjust=0.5)) + 
   labs(title="Organic Avocados", x= "Time", y="Average Price") + geom_hline(yintercept=max(organic$average_price), linetype="dashed", color = "red") + 
   geom_hline(yintercept=min(organic$average_price), linetype="dashed", color = "blue") +
-  theme_minimal()
+  theme_minimal() 
+#+ transition_reveal(date)
+
 
 organic_volume <- 
   organic %>%

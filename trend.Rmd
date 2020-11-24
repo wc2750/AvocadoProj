@@ -159,7 +159,7 @@ org_pat_yearly =
   facet_wrap(~as.factor(year)) + 
   theme_minimal() + 
   theme(plot.title=element_text(hjust=0.5), axis.text.x = element_text(angle = 90)) +
-  labs(title="Seasonal Fluctuations \n Convenctional Avocados", x="Month", y="Average Price") 
+  labs(title="Organic Avocados", x="Month", y="Average Price") 
 
 
 plot_grid(conv_pat_yearly, org_pat_yearly, nrow=2)

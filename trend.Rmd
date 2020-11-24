@@ -242,7 +242,7 @@ time_fig =
 ggplotly(time_fig) %>% layout(showlegend = FALSE)
 ```
 
-## Avocado Consumption across Time in US by Region
+## Average Year Avocado Consumption in US by Region
 We are interested in the ranking of regions people from which consumed the most amount of avocados.
 
 ```{r}

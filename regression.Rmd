@@ -40,6 +40,9 @@ avo_df =
 
 
 ## Use Prophet Machine Learning Model to Predict Price
+
+Prophet is a great times-series prediction model. According to the graph below, we know where the average price will be at in the coming year. 
+
 ```{r, cache=TRUE, message=FALSE}
 avo_df_sub = avo_df %>% 
   filter(region == "TotalUS") %>%
@@ -56,7 +59,9 @@ ylabel = "Average Price",
 title = "Prediction of prices in one year")
 ```
 
-## The components of the model affect our predictions.
+## Forecast Components
+
+The two graphs belows tells us the trend, yearly of the time series and how components of the model affect our predictions.
 ```{r, cache=TRUE, message=FALSE}
 prophet_plot_components(mod, forecast)
 ```

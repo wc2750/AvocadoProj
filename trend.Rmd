@@ -74,13 +74,13 @@ price_trend <-
   avo_df %>% 
   select(date, average_price, type) %>%
   ggplot(aes(x=date, y=average_price, fill=type, color=type)) +
-  geom_area( alpha = 0.3, position = position_dodge(0.8)) + 
+  geom_area(alpha = 0.3, position = position_dodge(0.8)) + 
   theme_minimal() +
   labs(
     title = "Time vs. Avocado Price by Typen",
     x = "Time",
     y = "Average Price",
-    fill = "Type",
+    fill = "Type"
     #caption = "https://hassavocadoboard.com/"
   ) +
   guides(color = FALSE) + 
@@ -90,7 +90,7 @@ price_trend <-
 price_trend
 ```
 
-The conventional avocado still takes over the market with lower prices. 
+The conventional avocado still takes over the market with lower prices, but the share of organic avocado was increasing slightly year by year.
 ![](trend_2.png){}
 ```{r market_pie_plot, include=FALSE}
 avo_df %>% 
@@ -151,8 +151,9 @@ org_pat_yearly =
   geom_line(group=1, color=org_color) + 
   facet_wrap(~as.factor(year)) + 
   theme_minimal() + 
-  theme(plot.title=element_text(hjust=0.5), axis.text.x = element_text(angle = 90)) + 
+  theme(plot.title=element_text(hjust=0.5), axis.text.x = element_text(angle = 90)) +
   labs(title="Seasonal Fluctuations \n Convenctional Avocados", x="Month", y="Average Price")
+
  
 
 plot_grid(conv_pat_yearly, org_pat_yearly, nrow=2)
@@ -180,16 +181,16 @@ conventional_monthly <-
 ggplot(aes(x=date, y=average_price)) + 
   geom_line(color=conv_color) + 
   theme(plot.title=element_text(hjust=0.5)) + 
-  labs(title="Conventional Avocados") + geom_hline(yintercept=max(conventional$average_price), linetype="dashed", color = "red") + 
+  labs(title="Conventional Avocados", x= "Time", y="Average Price") + geom_hline(yintercept=max(conventional$average_price), linetype="dashed", color = "red") + 
   geom_hline(yintercept=min(conventional$average_price), linetype="dashed", color = "blue") +
-  theme_minimal()
-
+  theme_minimal() 
 
 conventional_volume <- 
   conventional %>%
   ggplot(aes(x=date, y=total_volume)) + 
   geom_bar(stat='identity', fill=conv_color, color=conv_color) + 
   theme(plot.title=element_text(hjust=0.5)) +
+  labs(x= "Time", y="Average Volume") +
   geom_smooth(method="loess", color="red") +
   theme_minimal()
 
@@ -198,7 +199,7 @@ organic_monthly <-
   ggplot(aes(x=date, y=average_price)) + 
   geom_line(color=org_color) + 
   theme(plot.title=element_text(hjust=0.5)) + 
-  labs(title="Organic Avocados") + geom_hline(yintercept=max(organic$average_price), linetype="dashed", color = "red") + 
+  labs(title="Organic Avocados", x= "Time", y="Average Price") + geom_hline(yintercept=max(organic$average_price), linetype="dashed", color = "red") + 
   geom_hline(yintercept=min(organic$average_price), linetype="dashed", color = "blue") +
   theme_minimal()
 
@@ -207,20 +208,47 @@ organic_volume <-
   ggplot(aes(x=date, y=total_volume)) + 
   geom_bar(stat='identity', fill=org_color ,color=org_color) + 
   theme(plot.title=element_text(hjust=0.5)) +
+  labs(x= "Time", y="Average Volume") +
   geom_smooth(method="loess", color="red") +
   theme_minimal()
 
 plot_grid(conventional_monthly, organic_monthly,conventional_volume, organic_volume, nrow=2, ncol=2)
 ```
 
+## Avocado Price across Time in US by Region
+```{r}
+time_fig =
+  avo_df %>% 
+  filter(year != 2018) %>% 
+  group_by(year, month, region) %>% 
+  summarise(mean_price = mean(average_price)) %>% 
+  ggplot(aes(x = month, y = mean_price, color = region)) +
+  geom_point(size = 0.5) +
+  geom_smooth(size = 0.3, se = FALSE) + 
+  facet_grid(~year) +
+  labs(
+    title = "Time vs. Avocado Price by Region",
+    x = "Month",
+    y = "Average Price",
+    color = "Region",
+    caption = "https://hassavocadoboard.com/"
+    ) + 
+  scale_x_continuous(
+    breaks = c(seq(1, 12, by = 3)),
+    labels = c(seq(1, 12, by = 3))
+    ) 
+  
 
-## Top Avocado Consumption in US
+ggplotly(time_fig) %>% layout(showlegend = FALSE)
+```
+
+## Avocado Consumption across Time in US by Region
 We are interested in the ranking of regions people from which consumed the most amount of avocados.
 
 ```{r}
 avo_df %>% 
   filter(year != 2018 & region != "TotalUS") %>% 
-  group_by(region, year) %>% 
+  group_by(region, year) %>%
   summarise(year_sum = sum(total_volume)) %>% 
   ungroup(year) %>% 
   summarise(region_avg = mean(year_sum)) %>% 
@@ -234,5 +262,7 @@ avo_df %>%
     title = "Region vs. Average Year Consumption"
   ) 
 ```
+
+
 
 

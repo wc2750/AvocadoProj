@@ -82,6 +82,9 @@ avo_tidy =
     bag_type = recode(bag_type, x_large = "extra_large")
   )
 
+
+gdp_df = 
+  read_csv("data/gdp-by-state.csv")
 ```
 
 
@@ -355,5 +358,11 @@ pct_dif_2 =
 
 
 plot_grid(pct_dif_1, pct_dif_2, ncol=2)
+```
+
+# Regional Analysis
+
+```{r}
+
 ```
 

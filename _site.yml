@@ -4,7 +4,7 @@ navbar:
   title: "Home"
   right:
     - text: "Trend Graphs"
-      href: general.html
+      href: trend.html
     - text: "Prediction Analysis"
       href: prophet.html
     - text: "Resource"

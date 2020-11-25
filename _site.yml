@@ -10,7 +10,7 @@ navbar:
     - text: "Resource"
       href: resource.html
     - text: "Interactive Map"
-      href: map.html
+      href: interactive.html
     - icon: fa-github fa-lg
       href: https://github.com/wc2750/AvocadoProj.github.io
 output:

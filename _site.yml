@@ -6,7 +6,7 @@ navbar:
     - text: "Trend Graphs"
       href: trend.html
     - text: "Prediction Analysis"
-      href: prophet.html
+      href: regression.html
     - text: "Resource"
       href: resource.html
     - text: "Interactive Map"

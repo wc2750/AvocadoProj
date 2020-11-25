@@ -83,8 +83,7 @@ avo_tidy =
   )
 
 
-gdp_df = 
-  read_csv("data/gdp-by-state.csv")
+
 ```
 
 
@@ -360,9 +359,51 @@ pct_dif_2 =
 plot_grid(pct_dif_1, pct_dif_2, ncol=2)
 ```
 
-# Regional Analysis
+# Regional Analysis with GDP data
 
+
+trying hard to merge the two datasets
+```{r looking_into_region}
+region_df = 
+  avo_df %>% 
+  mutate(n_obs = n(),sum_volume = sum(total_volume)) %>% 
+  mutate(region = str_to_lower(region))
+
+large_region = 
+  region_df %>%
+  filter(region %in% c("west","midwest","south","southwest","southeast","northeast","midsouth","southCentral","totalus"))
+```
 ```{r}
+gdp_df = 
+  read_csv("data/gdp-by-state.csv") %>% 
+  select(-1) %>% 
+  mutate(
+    region = str_remove(Area," "),
+    region = str_to_lower(region)
+  ) %>% 
+  filter(region!="unitedstates") %>% 
+  select(-Area) %>% 
+  pivot_longer(
+    "2013":"2017",
+    names_to = "year",
+    values_to = "gdp"
+  ) %>% 
+  mutate(year = as.numeric(year))
 
+avo_year = 
+  region_df %>% 
+  group_by(year,region) %>%
+  summarise(avgp_year = sum(average_price)/n(),
+    v_small_year = sum(small),
+    v_large_year = sum(large),
+    v_extra_year = sum(extra_large),
+    sum_bags = sum(total_bags),
+    b_small_year = sum(small_bags),
+    b_large_year = sum(large_bags),
+    b_xlarge_year = sum(x_large_bags)
+    )
+
+avo_gdp = 
+  left_join(avo_year, gdp_df, by = c("region","year"))
 ```
 

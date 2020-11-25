@@ -10,7 +10,7 @@ navbar:
     - text: "Resource"
       href: resource.html
     - text: "Interactive Map"
-      href: interactive.html
+      href: https://bc2918.shinyapps.io/interactive/#section-avocado-between-region
     - icon: fa-github fa-lg
       href: https://github.com/wc2750/AvocadoProj.github.io
 output:

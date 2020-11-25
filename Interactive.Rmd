@@ -4,11 +4,12 @@ output:
   flexdashboard::flex_dashboard:
     orientation: columns
     vertical_layout: fill
-    source_code: embed
+    source: embed
+    code_folding: hide
 runtime: shiny
 ---
 
-```{r,include=FALSE,message=FALSE,echo=FALSE}
+```{r,include=FALSE}
 library(flexdashboard)
 library(shiny)
 library(readxl)
@@ -56,8 +57,7 @@ org_color = "#7BA23F"
 ```
 
 
-
-Avocado Price in US
+Avocado by Region
 ===================================== 
 
 Column {.sidebar}
@@ -87,7 +87,8 @@ selectInput(
 Column {.tabset}
 -----------------------------------------------------------------------
 
-### Region Plot
+
+### Price
 
 ```{r spaghetti_map}
 
@@ -110,11 +111,29 @@ avo_df %>%
 
 ```
 
+### Consumption
+```{r}
+renderPlotly({ 
 
-### Compare Region
+avo_df %>%
+  filter(year == input[["year_choice_1"]] & region ==input[["region_choice_1"]]) %>% 
+  plot_ly(x=~date, y=~total_volume, type="scatter", mode="lines+markers", color = ~type, colors=c(conv_color,org_color)) %>% 
+    layout(
+    title="Time vs. Volume Consumption",
+    xaxis=list(title="Time"),
+    yaxis=list(title="Volume Consumed"),
+    legend=list(title=list(text='<b> Type </b>'))
+    )
+})
+```
+
+
+Avocado between Region
+===================================== 
 
 Column {.sidebar}
 -----------------------------------------------------------------------
+
 
 ```{r for_sidebar_2}
 
@@ -126,10 +145,15 @@ selectInput(
 
 # Create checkbox input
 checkboxGroupInput("region_choice_2", label=h3("Select Region"),
-choices = region, selected = c("California","Chicago"))
+choices = region, selected = c("LosAngeles","Chicago","NewYork"))
 
 ```
 
+Column {.tabset}
+-----------------------------------------------------------------------
+
+
+### Price
 ```{r}
 renderPlotly({ 
 
@@ -148,69 +172,11 @@ renderPlotly({
 })
 ```
 
-
-Avocado Consumption in US
-===================================== 
-
-Column {.sidebar}
------------------------------------------------------------------------
-
-```{r for_sidebar_3}
-# Pull list of region
-region = avo_df %>% pull(region) %>% unique()
-
-# Create input
-selectInput(
-  "region_choice_3", 
-  label=h3("Select Region"),
-  choices = region, selected = "Albany")
-
-selectInput(
-  "year_choice_3",
-  label=h3("Select Year"),
-  choices = c(2015,2016,2017)
-)
-```
-
-Column {.tabset}
------------------------------------------------------------------------
-### Region Plot
-```{r}
-renderPlotly({ 
-
-avo_df %>%
-  filter(year == input[["year_choice_3"]] & region ==input[["region_choice_3"]]) %>% 
-  plot_ly(x=~date, y=~total_volume, type="scatter", mode="lines+markers", color = ~type, colors=c(conv_color,org_color)) %>% 
-    layout(
-    title="Time vs. Volume Consumption",
-    xaxis=list(title="Time"),
-    yaxis=list(title="Volume Consumed"),
-    legend=list(title=list(text='<b> Type </b>'))
-    )
-})
-```
-
-### Compare Region
-
-Column {.sidebar}
------------------------------------------------------------------------
-
-```{r for_sidebar_4}
-
-selectInput(
-  "year_choice_4",
-  label=h3("Select Year"),
-  choices = c(2015,2016,2017)
-)
-# Create checkbox input
-checkboxGroupInput("region_choice_4", label=h3("Select Region"),
-choices = region, selected = c("California","Chicago"))
-```
-
+### Consumption
 ```{r}
 renderPlotly({ 
   avo_df %>% 
-    filter(year== input[["year_choice_4"]]& region ==input[["region_choice_4"]]) %>% 
+    filter(year== input[["year_choice_2"]]& region ==input[["region_choice_2"]]) %>% 
     group_by(month, region) %>% 
     summarise(month_volume = sum(total_volume)) %>% 
     ungroup() %>%

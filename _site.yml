@@ -5,8 +5,10 @@ navbar:
   right:
     - text: "Trend Graphs"
       href: trend.html
-    - text: "Prediction Analysis"
+    - text: "Regression Analysis"
       href: regression.html
+    - text: "Price Prediction!"
+      href: prediction.html
     - text: "Resource"
       href: resource.html
     - text: "Interactive Map"

@@ -1,0 +1,103 @@
+---
+title: "Merge avo_gdp dataet"
+output: html_document
+---
+
+```{r setup}
+library(tidyverse)
+```
+
+```{r include = FALSE, message = FALSE, warning = FALSE}
+# load basic avocado dataframe
+avo_df = read_csv("avocado.csv") %>%
+  janitor::clean_names() %>%
+  select(-1) %>% 
+  separate(date, c("year", "month", "day"), remove = FALSE) %>% 
+  mutate(
+    year = as.integer(year),
+    month = as.integer(month),
+    day = as.integer(day)
+  ) %>% 
+  rename(
+    small = x4046,
+    large = x4225,
+    extra_large = x4770,
+  ) 
+```
+
+# Regional Analysis with GDP data
+
+trying hard to merge the two datasets
+```{r looking_into_region}
+region_df = avo_df
+```
+
+```{r merge_things}
+cities_df = read_csv("uscities.csv") %>% 
+  select(state_name, state_id) %>% 
+  mutate(
+    region = 
+      case_when(
+        state_id %in% c("ND","SD","MN","NE","IA","KS","MO")~"Plains",
+        state_id %in% c("WA", "OR", "ID", "MT", "WY", "NV","UT", "CO", "AZ", "NM")~"West",
+        state_id %in% c("KY", "VA", "TN", "MD", "NC", "SC")~"Midsouth",
+        state_id %in% c("WV", "MD", "DE", "NJ", "CN", "RI", "MA", "VT", "NH", "NY", "PA", "ME")~"Northeast",
+        state_id %in% c("CA")~"California",
+        state_id %in% c("MS","AL","GA", "FL")~"Southeast",
+        state_id %in% c("OK", "AR", "TX", "LA")~"SouthCentral",
+        state_id %in% c("WI", "IL", "IN", "MI", "OH")~"GreatLakes"
+      )
+  ) 
+
+gdp_df = 
+  read_csv("gdp-by-state.csv") %>% 
+  select(-1) %>% 
+  filter(Area!="United States") %>% 
+  pivot_longer(
+    "2013":"2017",
+    names_to = "year",
+    values_to = "gdp"
+  ) %>% 
+  mutate(
+    year = as.numeric(year),
+    state_name = Area 
+    ) %>% 
+  select(-Area) %>% 
+  filter(year %in% c(2015,2016,2017))
+  
+
+gdp_region = 
+  left_join(gdp_df, cities_df, by = "state_name") %>% 
+  group_by(year, region) %>% 
+  summarize(average_gdp = mean(gdp), region = region) %>% 
+  unique()
+
+  
+
+
+avo_year = 
+  region_df %>% 
+  group_by(year,region,type) %>%
+  summarise(avgp_year =  mean(average_price),
+            sum_volume = sum(total_volume),
+            v_small_year = sum(small),
+            v_large_year = sum(large),
+            v_extra_year = sum(extra_large),
+            sum_bags = sum(total_bags),
+            b_small_year = sum(small_bags),
+            b_large_year = sum(large_bags),
+            b_xlarge_year = sum(x_large_bags),
+            type = type
+    ) %>% 
+  filter(region %in% c("California","West","Plains","SouthCentral","GreatLakes","Midsouth","Southeast","Northeast")) %>% 
+  filter(year %in% c(2015,2016,2017)) %>% 
+  unique()
+
+avo_gdp = 
+  left_join( gdp_region, avo_year, by = c("region","year")) %>%
+  drop_na() %>% 
+  unique()
+
+write_csv(avo_gdp,"avo_gdp.csv")
+```
+

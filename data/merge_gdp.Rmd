@@ -68,6 +68,7 @@ gdp_df =
 
 gdp_region = 
   left_join(gdp_df, cities_df, by = "state_name") %>% 
+  unique() %>%
   group_by(year, region) %>% 
   summarize(average_gdp = mean(gdp), region = region) %>% 
   unique()

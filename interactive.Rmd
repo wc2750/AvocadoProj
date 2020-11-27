@@ -6,6 +6,7 @@ output:
     vertical_layout: fill
     source: embed
     code_folding: hide
+    theme: journal
 runtime: shiny
 ---
 
@@ -22,6 +23,7 @@ library(leaflet)
 library(maptools)
 library(BAMMtools)
 library(patchwork)
+
 knitr::opts_chunk$set(
   warning = FALSE,
   message = FALSE,
@@ -48,18 +50,151 @@ avo_df =
     extra_large = x4770,
   )
 
+# Divide states by region.
+state_df = tibble(
+  state = state.abb,
+  state_name = state.name
+) %>% 
+  mutate(
+    region = case_when(
+      (state %in% c("CA"))==TRUE ~ "California",
+      (state %in% c("WA","OR","ID","MT","WY","NV","UT","CO","AZ","NM"))==TRUE ~ "West",
+      (state %in%c("ND","SD","NE","KS","MN","IA","MO"))==TRUE ~"Plains",
+      (state %in% c("TX","OK","AR","LA"))==TRUE ~ "SouthCentral",
+      (state %in% c("WI","IL","IN","OH","MI"))==TRUE ~ "GreatLakes",
+      (state %in% c("PA","NY","VT","ME","NH","MA","RI","CT","NJ"))==TRUE ~ "Northeast",
+      (state %in% c("TN","KY","WV","DE","MD","DC","VA","NC"))==TRUE ~ "Midsouth",
+      (state %in% c("MS","AL","GA","SC","FL"))==TRUE ~ "Southeast"
+      
+    )
+  )
+
+pri_df = 
+  avo_df %>%
+  filter(year != 2018,
+         region %in% c("California", "West", "Plains", "SouthCentral", "GreatLakes", "Northeast", "Midsouth", "Southeast")) %>%
+  mutate(quarter = if_else(month %in% c(1,2,3), "quarter1", if_else(month %in% c(4,5,6), "quarter2", if_else(month %in% c(7,8,9), "quarter3", "quarter4")))) %>%
+  select(year, quarter, type, region, average_price) %>%
+  group_by(year, quarter, type, region) %>%
+  summarise(quarterly_average_price = mean(average_price))
+
+con_df = 
+  avo_df %>%
+  filter(year != 2018,
+         region %in% c("California", "West", "Plains", "SouthCentral", "GreatLakes", "Northeast", "Midsouth", "Southeast")) %>%
+  mutate(quarter = if_else(month %in% c(1,2,3), "quarter1", if_else(month %in% c(4,5,6), "quarter2", if_else(month %in% c(7,8,9), "quarter3", "quarter4")))) %>%
+  select(year, quarter, type, region, total_volume) %>%
+  group_by(year, quarter, type, region) %>%
+  summarise(quarterly_total_volume = sum(total_volume))
+
 conv_color = "#F17C67"
 org_color = "#7BA23F"
 
+g <- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa'),
+  lakecolor = toRGB('white')
+)
+
 ```
 
+
+US Overview
+=====================================
+
+Column {.sidebar}
+-----------------------------------------------------------------------
+```{r}
+
+# Create input
+selectInput(
+  "year_choice",
+  label=h3("Year"),
+  choices = c(2015,2016,2017)
+)
+
+selectInput(
+  "quarter_choice", 
+  label=h3("Quarter"),
+  choices = c("Jan - Mar"="quarter1", "Apr - Jun"="quarter2", "Jul - Sep"="quarter3", "Oct - Dec"="quarter4")
+  )
+
+selectInput(
+  "type_choice", 
+  label=h3("Type"),
+  choices = c("Conventional" = "conventional", "Organic"= "organic")
+  )
+
+```
+
+Column {.tabset}
+-----------------------------------------------------------------------
+
+### Average Price
+
+```{r}
+renderPlotly({
+  temp = 
+    left_join(state_df, pri_df) %>% 
+    filter(
+        year == input[["year_choice"]] & 
+        quarter == input[["quarter_choice"]] & 
+        type == input[["type_choice"]]
+      )
+  
+  temp %>% 
+    rename(Price = quarterly_average_price) %>% 
+    plot_geo() %>%
+    add_trace(
+      z = ~Price,
+      colors = "Greens",
+      locations = temp$state, 
+      text = temp$region, 
+      span = I(0),
+      locationmode = 'USA-states'
+    ) %>%
+    layout(
+      geo = g,
+      title = "Quarterly Average Avocado Price"
+      )
+})
+```
+
+### Total Consumption
+
+```{r}
+renderPlotly({
+  temp = 
+    left_join(state_df, con_df) %>% 
+    filter(
+        year == input[["year_choice"]] & 
+        quarter == input[["quarter_choice"]] & 
+        type == input[["type_choice"]]
+      )
+  
+  temp %>% 
+    rename(Volume = quarterly_total_volume) %>% 
+    plot_geo() %>%
+    add_trace(
+      z = ~Volume,
+      colors = "Greens",
+      locations = temp$state, 
+      text = temp$region, 
+      span = I(0),
+      locationmode = 'USA-states'
+    ) %>%
+    layout(
+      geo = g,
+      title = "Quarterly Total Avocado Consumption"
+      )
+})
+```
 
 Avocado by Region
 ===================================== 
 
 Column {.sidebar}
 -----------------------------------------------------------------------
-
 
 ```{r for_sidebar_1}
 
@@ -70,20 +205,19 @@ region = avo_df %>% pull(region) %>% unique()
 
 selectInput(
   "region_choice_1", 
-  label=h3("Select Region"),
+  label=h3("Region"),
   choices = region, selected = "Albany")
 
 selectInput(
   "year_choice_1",
-  label=h3("Select Year"),
-  choices = c(2015,2016,2017)
+  label=h3("Year"),
+  choices = c(2015,2016,2017),
 )
 
 ```
 
 Column {.tabset}
 -----------------------------------------------------------------------
-
 
 ### Price
 
@@ -95,14 +229,15 @@ Column {.tabset}
 renderPlotly({ 
 
 avo_df %>%
-  filter(year == input[["year_choice_1"]] & region ==input[["region_choice_1"]]) %>% 
-  plot_ly(x=~date, y=~average_price, type="scatter", mode="lines+markers", color = ~type, colors=c(conv_color,org_color)) %>% 
-    layout(
-    title="Time vs. Average Price",
-    xaxis=list(title="Time"),
-    yaxis=list(title="Average Price"),
-    legend=list(title=list(text='<b> Type </b>'))
-    )
+    mutate(type = recode(type, "conventional"="Conventional","organic"="Organic")) %>% 
+    filter(year == input[["year_choice_1"]] & region ==input[["region_choice_1"]]) %>% 
+    plot_ly(x=~date, y=~average_price, type="scatter", mode="lines+markers", color = ~type, colors=c(conv_color,org_color)) %>% 
+      layout(
+      title="Time vs. Average Price",
+      xaxis=list(title="Time"),
+      yaxis=list(title="Average Price"),
+      legend=list(title=list(text='<b> Type </b>'))
+      )
 })
 
 
@@ -113,14 +248,15 @@ avo_df %>%
 renderPlotly({ 
 
 avo_df %>%
-  filter(year == input[["year_choice_1"]] & region ==input[["region_choice_1"]]) %>% 
-  plot_ly(x=~date, y=~total_volume, type="scatter", mode="lines+markers", color = ~type, colors=c(conv_color,org_color)) %>% 
-    layout(
-    title="Time vs. Volume Consumption",
-    xaxis=list(title="Time"),
-    yaxis=list(title="Volume Consumed"),
-    legend=list(title=list(text='<b> Type </b>'))
-    )
+    mutate(type = recode(type, "conventional"="Conventional","organic"="Organic")) %>% 
+    filter(year == input[["year_choice_1"]] & region ==input[["region_choice_1"]]) %>% 
+    plot_ly(x=~date, y=~total_volume, type="scatter", mode="lines+markers", color = ~type, colors=c(conv_color,org_color)) %>% 
+      layout(
+      title="Time vs. Volume Consumption",
+      xaxis=list(title="Time"),
+      yaxis=list(title="Volume Consumed"),
+      legend=list(title=list(text='<b> Type </b>'))
+      )
 })
 ```
 
@@ -131,24 +267,22 @@ Avocado between Region
 Column {.sidebar}
 -----------------------------------------------------------------------
 
-
 ```{r for_sidebar_2}
 
 selectInput(
   "year_choice_2",
-  label=h3("Select Year"),
+  label=h3("Year"),
   choices = c(2015,2016,2017)
 )
 
 # Create checkbox input
-checkboxGroupInput("region_choice_2", label=h3("Select Region"),
+checkboxGroupInput("region_choice_2", label=h3("Region"),
 choices = region, selected = c("LosAngeles","Chicago","NewYork"))
 
 ```
 
 Column {.tabset}
 -----------------------------------------------------------------------
-
 
 ### Price
 ```{r}

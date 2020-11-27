@@ -65,6 +65,8 @@ avo_df =
     extra_large = x4770,
   ) 
 
+avo_gdp = read_csv("data/avo_gdp.csv")
+
 avo_tidy = 
   avo_df %>% 
   pivot_longer(
@@ -363,75 +365,10 @@ plot_grid(pct_dif_1, pct_dif_2, ncol=2)
 
 trying hard to merge the two datasets
 ```{r looking_into_region}
-region_df = avo_df
+# to other folder
 ```
 ```{r merge_things}
-cities_df = read_csv("data/uscities.csv") %>% 
-  select(state_name, state_id) %>% 
-  mutate(
-    region = 
-      case_when(
-        state_id %in% c("ND","SD","MN","NE","IA","KS","MO")~"Plains",
-        state_id %in% c("WA", "OR", "ID", "MT", "WY", "NV","UT", "CO", "AZ", "NM")~"West",
-        state_id %in% c("KY", "VA", "TN", "MD", "NC", "SC")~"Midsouth",
-        state_id %in% c("WV", "MD", "DE", "NJ", "CN", "RI", "MA", "VT", "NH", "NY", "PA", "ME")~"Northeast",
-        state_id %in% c("CA")~"California",
-        state_id %in% c("MS","AL","GA", "FL")~"Southeast",
-        state_id %in% c("OK", "AR", "TX", "LA")~"SouthCentral",
-        state_id %in% c("WI", "IL", "IN", "MI", "OH")~"GreatLakes"
-      )
-  ) 
-
-gdp_df = 
-  read_csv("data/gdp-by-state.csv") %>% 
-  select(-1) %>% 
-  filter(Area!="United States") %>% 
-  pivot_longer(
-    "2013":"2017",
-    names_to = "year",
-    values_to = "gdp"
-  ) %>% 
-  mutate(
-    year = as.numeric(year),
-    state_name = Area 
-    ) %>% 
-  select(-Area) %>% 
-  filter(year %in% c(2015,2016,2017))
-  
-
-gdp_region = 
-  left_join(gdp_df, cities_df, by = "state_name") %>% 
-  group_by(year, region) %>% 
-  summarize(total_gdp = mean(gdp), region = region) %>% 
-  unique()
-
-  
-
-
-avo_year = 
-  region_df %>% 
-  group_by(year,region,type) %>%
-  summarise(avgp_year =  mean(average_price),
-            sum_volume = sum(total_volume),
-            v_small_year = sum(small),
-            v_large_year = sum(large),
-            v_extra_year = sum(extra_large),
-            sum_bags = sum(total_bags),
-            b_small_year = sum(small_bags),
-            b_large_year = sum(large_bags),
-            b_xlarge_year = sum(x_large_bags),
-            type = type
-    ) %>% 
-  filter(region %in% c("California","West","Plains","SouthCentral","GreatLakes","Midsouth","Southeast","Northeast")) %>% 
-  filter(year %in% c(2015,2016,2017)) %>% 
-  unique()
-
-avo_gdp = 
-  left_join( gdp_region, avo_year, by = c("region","year")) %>%
-  drop_na() %>% 
-  unique()
-
-write_csv(avo_gdp,"data/avo_gdp.csv")
+# to other folder
 ```
 
 
@@ -539,7 +476,6 @@ ggplotly(volume_region_size_plt)
 By adding gdp data to the avocado dataset...
 
 ```{r gdp_volume_price}
- 
 avo_gdp %>% filter(type == "conventional") %>% 
   group_by(region, year) %>% 
   mutate(region = fct_reorder(region, total_gdp)) %>% 

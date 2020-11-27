@@ -24,6 +24,13 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
+<script src="site_libs/plotly-binding-4.9.2.1/plotly.js"></script>
+<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="site_libs/crosstalk-1.1.0.1/css/crosstalk.css" rel="stylesheet" />
+<script src="site_libs/crosstalk-1.1.0.1/js/crosstalk.min.js"></script>
+<link href="site_libs/plotly-htmlwidgets-css-1.52.2/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="site_libs/plotly-main-1.52.2/plotly-latest.min.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
@@ -360,21 +367,8 @@ $(document).ready(function () {
 <p>trying hard to merge the two datasets</p>
 <div id="price-vs-region" class="section level2">
 <h2>Price vs Region</h2>
-<pre><code>## # A tibble: 51 x 2
-## # Groups:   year, region [27]
-##     year region    
-##    &lt;dbl&gt; &lt;chr&gt;     
-##  1  2015 California
-##  2  2015 California
-##  3  2015 GreatLakes
-##  4  2015 GreatLakes
-##  5  2015 Midsouth  
-##  6  2015 Midsouth  
-##  7  2015 Northeast 
-##  8  2015 Northeast 
-##  9  2015 Plains    
-## 10  2015 Plains    
-## # … with 41 more rows</code></pre>
+<div id="htmlwidget-d4c1ee8ef5728d103867" style="width:672px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-d4c1ee8ef5728d103867">{"x":{"visdat":{"72323e477f88":["function () ","plotlyVisDat"]},"cur_data":"72323e477f88","attrs":{"72323e477f88":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"year","type":"category","categoryorder":"array","categoryarray":["2015","2016","2017"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"avgp_year"},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"x":["2015","2016","2017"],"y":[1.02038461538462,1.04615384615385,1.25301886792453],"type":"bar","name":"California","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2015","2016","2017"],"y":[1.07769230769231,1.14192307692308,1.33132075471698],"type":"bar","name":"GreatLakes","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2015","2016","2017"],"y":[1.11961538461538,1.18596153846154,1.32547169811321],"type":"bar","name":"Midsouth","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2015","2016","2017"],"y":[1.21480769230769,1.31942307692308,1.50528301886792],"type":"bar","name":"Northeast","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2015","2016","2017"],"y":[1.07730769230769,1.12769230769231,1.30150943396226],"type":"bar","name":"Plains","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2015","2016","2017"],"y":[0.812115384615385,0.858269230769231,0.950943396226415],"type":"bar","name":"SouthCentral","marker":{"color":"rgba(255,217,47,1)","line":{"color":"rgba(255,217,47,1)"}},"textfont":{"color":"rgba(255,217,47,1)"},"error_y":{"color":"rgba(255,217,47,1)"},"error_x":{"color":"rgba(255,217,47,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2015","2016","2017"],"y":[1.08423076923077,1.07115384615385,1.33415094339623],"type":"bar","name":"Southeast","marker":{"color":"rgba(229,196,148,1)","line":{"color":"rgba(229,196,148,1)"}},"textfont":{"color":"rgba(229,196,148,1)"},"error_y":{"color":"rgba(229,196,148,1)"},"error_x":{"color":"rgba(229,196,148,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2015","2016","2017"],"y":[0.94,0.915769230769231,1.09830188679245],"type":"bar","name":"West","marker":{"color":"rgba(179,179,179,1)","line":{"color":"rgba(179,179,179,1)"}},"textfont":{"color":"rgba(179,179,179,1)"},"error_y":{"color":"rgba(179,179,179,1)"},"error_x":{"color":"rgba(179,179,179,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="volume-vs-region" class="section level2">
 <h2>Volume vs Region</h2>

@@ -411,8 +411,8 @@ gdp_region =
 
 avo_year = 
   region_df %>% 
-  group_by(year,region) %>%
-  summarise(avgp_year = sum(average_price)/n(),
+  group_by(year,region,type) %>%
+  summarise(avgp_year =  mean(average_price),
             sum_volume = sum(total_volume),
             v_small_year = sum(small),
             v_large_year = sum(large),
@@ -428,7 +428,8 @@ avo_year =
   unique()
 
 avo_gdp = 
-  left_join( gdp_region, avo_year, by = c("region","year")) %>% 
+  left_join( gdp_region, avo_year, by = c("region","year")) %>%
+  drop_na() %>% 
   unique()
 
 write_csv(avo_gdp,"data/avo_gdp.csv")
@@ -436,9 +437,18 @@ write_csv(avo_gdp,"data/avo_gdp.csv")
 
 
 ## Price vs Region
+
+
 ```{r price_region}
+
 avo_gdp %>% 
-  select()
+  mutate(year = as.factor(year)) %>% 
+  filter(type == "conventional") %>% 
+  mutate(
+    region = fct_reorder(region, avgp_year) 
+  ) %>% 
+  plot_ly(x = ~year, y = ~avgp_year, color = ~region, type = "bar")
+
 ```
 
 

@@ -1,0 +1,33 @@
+---
+title: "Project Report"
+output: 
+  html_document:
+    navbar:
+      title: "Home"
+    toc: true
+    toc_float: true
+---
+
+## Motivation
+
+## Questions
+
+## Data
+
+**Source Data**
+
+**Data Cleaning**
+
+**Outcome of interest**
+
+**Candidate Predictor**
+
+
+## Exploratory Data Analysis 
+
+
+## Formal Analysis
+
+## Conclusion
+
+## Discussion 

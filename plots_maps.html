@@ -291,7 +291,7 @@ $(document).ready(function () {
   <a href="trend.html">Trend Graphs</a>
 </li>
 <li>
-  <a href="regression.html">Prediction Analysis</a>
+  <a href="regression.html">Regression Analysis</a>
 </li>
 <li>
   <a href="resource.html">Resource</a>
@@ -369,7 +369,21 @@ $(document).ready(function () {
 <p>trying hard to merge the two datasets</p>
 <div id="price-vs-region" class="section level2">
 <h2>Price vs Region</h2>
-<pre><code>## # A tibble: 82,620 x 0</code></pre>
+<pre><code>## # A tibble: 51 x 2
+## # Groups:   year, region [27]
+##     year region    
+##    &lt;dbl&gt; &lt;chr&gt;     
+##  1  2015 California
+##  2  2015 California
+##  3  2015 GreatLakes
+##  4  2015 GreatLakes
+##  5  2015 Midsouth  
+##  6  2015 Midsouth  
+##  7  2015 Northeast 
+##  8  2015 Northeast 
+##  9  2015 Plains    
+## 10  2015 Plains    
+## # ... with 41 more rows</code></pre>
 </div>
 <div id="volume-vs-region" class="section level2">
 <h2>Volume vs Region</h2>

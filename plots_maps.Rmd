@@ -364,13 +364,11 @@ plot_grid(pct_dif_1, pct_dif_2, ncol=2)
 
 trying hard to merge the two datasets
 ```{r looking_into_region}
-region_df = 
-  avo_df %>% 
-  group_by(year,region)
+region_df = avo_df
 ```
 ```{r merge_things}
 cities_df = read_csv("data/uscities.csv") %>% 
-  select(state_name, state_id ,lat,lng) %>% 
+  select(state_name, state_id) %>% 
   mutate(
     region = 
       case_when(
@@ -398,10 +396,17 @@ gdp_df =
     year = as.numeric(year),
     state_name = Area 
     ) %>% 
-  select(-Area)
+  select(-Area) %>% 
+  filter(year %in% c(2015,2016,2017))
+  
 
 gdp_region = 
-  left_join(gdp_df, cities_df, by = "state_name")
+  left_join(gdp_df, cities_df, by = "state_name") %>% 
+  group_by(year, region) %>% 
+  summarize(total_gdp = sum(gdp), region = region) %>% 
+  unique()
+
+  
 
 
 avo_year = 
@@ -415,15 +420,16 @@ avo_year =
             sum_bags = sum(total_bags),
             b_small_year = sum(small_bags),
             b_large_year = sum(large_bags),
-            b_xlarge_year = sum(x_large_bags)
+            b_xlarge_year = sum(x_large_bags),
+            type = type
     ) %>% 
-  filter(region %in% c("California","West","Plains","SouthCentral","GreatLakes","Midsouth","Southeast","Northeast"))
+  filter(region %in% c("California","West","Plains","SouthCentral","GreatLakes","Midsouth","Southeast","Northeast")) %>% 
+  filter(year %in% c(2015,2016,2017)) %>% 
+  unique()
 
 avo_gdp = 
-  left_join(avo_year, gdp_region, by = c("region")) %>% 
-  filter(year.x == year.y) %>% 
-  mutate(year = year.x) %>% 
-  select(-year.x,-year.y,-state_id) 
+  left_join( gdp_region, avo_year, by = c("region","year")) %>% 
+  unique()
 
 write_csv(avo_gdp,"data/avo_gdp.csv")
 ```

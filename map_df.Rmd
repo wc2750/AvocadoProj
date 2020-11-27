@@ -1,0 +1,70 @@
+---
+title: "map test"
+output: 
+  html_document: 
+    code_folding: hide
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include = FALSE}
+library(tidyverse)
+library(modelr)
+library(mgcv)
+
+knitr::opts_chunk$set(
+fig.width = 9, 
+  fig.height = 6,
+  out.width = "80%"
+)
+theme_set(theme_minimal() + 
+            theme(legend.position = "bottom", 
+                  legend.title = element_blank(),
+                  plot.title = element_text(hjust = 0.5, size = 15),
+                  plot.subtitle = element_text(hjust = 0.5, size = 12)))
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+```
+
+```{r include = FALSE, message = FALSE, warning = FALSE}
+# load basic avocado dataframe
+avo_df = read_csv("data/avocado.csv") %>%
+  janitor::clean_names() %>%
+  select(-1) %>% 
+  separate(date, c("year", "month", "day"), remove = FALSE) %>% 
+  mutate(
+    year = as.integer(year),
+    month = as.integer(month),
+    day = as.integer(day)
+  ) %>% 
+  rename(
+    small = x4046,
+    large = x4225,
+    extra_large = x4770,
+  ) 
+```
+```{r}
+state_df = tibble(
+  state = state.abb
+) %>% 
+  mutate(
+    region = case_when(
+      (state %in% c("CA"))==TRUE ~ "California",
+      (state %in% c("WA","OR","ID","MT","WY","NV","UT","CO","AZ","NM"))==TRUE ~ "West",
+      (state %in%c("ND","SD","NE","KS","MN","IA","MO"))==TRUE ~"Plains",
+      (state %in% c("tx","OK","AR","LA"))==TRUE ~ "SouthCentral",
+      (state %in% c("WI","IL","IN","OH","MI"))==TRUE ~ "GreatLakes",
+      (state %in% c("PA","NY","VT","ME","NH","MA","RI","CT","NJ"))==TRUE ~ "Northeast",
+      (state %in% c("TN","KY","WV","DE","MD","DC","VA","NC"))==TRUE ~ "Midsouth",
+      (state %in% c("MS","AL","GA","SC","FL"))==TRUE ~ "Southeast"
+      
+    )
+  )
+
+print(state_df)
+```
+

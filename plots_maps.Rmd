@@ -366,44 +366,76 @@ trying hard to merge the two datasets
 ```{r looking_into_region}
 region_df = 
   avo_df %>% 
-  mutate(n_obs = n(),sum_volume = sum(total_volume)) %>% 
-  mutate(region = str_to_lower(region))
-
-large_region = 
-  region_df %>%
-  filter(region %in% c("west","midwest","south","southwest","southeast","northeast","midsouth","southCentral","totalus"))
+  group_by(year,region)
 ```
-```{r}
+```{r merge_things}
+cities_df = read_csv("data/uscities.csv") %>% 
+  select(state_name, state_id ,lat,lng) %>% 
+  mutate(
+    region = 
+      case_when(
+        state_id %in% c("ND","SD","MN","NE","IA","KS","MO")~"Plains",
+        state_id %in% c("WA", "OR", "ID", "MT", "WY", "NV","UT", "CO", "AZ", "NM")~"West",
+        state_id %in% c("KY", "VA", "TN", "MD", "NC", "SC")~"Midsouth",
+        state_id %in% c("WV", "MD", "DE", "NJ", "CN", "RI", "MA", "VT", "NH", "NY", "PA", "ME")~"Northeast",
+        state_id %in% c("CA")~"California",
+        state_id %in% c("MS","AL","GA", "FL")~"Southeast",
+        state_id %in% c("OK", "AR", "TX", "LA")~"SouthCentral",
+        state_id %in% c("WI", "IL", "IN", "MI", "OH")~"GreatLakes"
+      )
+  ) 
+
 gdp_df = 
   read_csv("data/gdp-by-state.csv") %>% 
   select(-1) %>% 
-  mutate(
-    region = str_remove(Area," "),
-    region = str_to_lower(region)
-  ) %>% 
-  filter(region!="unitedstates") %>% 
-  select(-Area) %>% 
+  filter(Area!="United States") %>% 
   pivot_longer(
     "2013":"2017",
     names_to = "year",
     values_to = "gdp"
   ) %>% 
-  mutate(year = as.numeric(year))
+  mutate(
+    year = as.numeric(year),
+    state_name = Area 
+    ) %>% 
+  select(-Area)
+
+gdp_region = 
+  left_join(gdp_df, cities_df, by = "state_name")
+
 
 avo_year = 
   region_df %>% 
   group_by(year,region) %>%
   summarise(avgp_year = sum(average_price)/n(),
-    v_small_year = sum(small),
-    v_large_year = sum(large),
-    v_extra_year = sum(extra_large),
-    sum_bags = sum(total_bags),
-    b_small_year = sum(small_bags),
-    b_large_year = sum(large_bags),
-    b_xlarge_year = sum(x_large_bags)
-    )
+            sum_volume = sum(total_volume),
+            v_small_year = sum(small),
+            v_large_year = sum(large),
+            v_extra_year = sum(extra_large),
+            sum_bags = sum(total_bags),
+            b_small_year = sum(small_bags),
+            b_large_year = sum(large_bags),
+            b_xlarge_year = sum(x_large_bags)
+    ) %>% 
+  filter(region %in% c("California","West","Plains","SouthCentral","GreatLakes","Midsouth","Southeast","Northeast"))
 
 avo_gdp = 
-  left_join(avo_year, gdp_df, by = c("region","year"))
+  left_join(avo_year, gdp_region, by = c("region")) %>% 
+  filter(year.x == year.y) %>% 
+  mutate(year = year.x) %>% 
+  select(-year.x,-year.y,-state_id) 
+
+write_csv(avo_gdp,"data/avo_gdp.csv")
 ```
 
+
+## Price vs Region
+```{r price_region}
+avo_gdp %>% 
+  select()
+```
+
+
+## Volume vs Region
+
+# 

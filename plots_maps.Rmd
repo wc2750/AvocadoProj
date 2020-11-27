@@ -360,6 +360,7 @@ plot_grid(pct_dif_1, pct_dif_2, ncol=2)
 # Regional Analysis with GDP data
 
 
+
 trying hard to merge the two datasets
 ```{r looking_into_region}
 region_df = avo_df
@@ -432,6 +433,9 @@ avo_gdp =
 
 write_csv(avo_gdp,"data/avo_gdp.csv")
 ```
+
+
+(merge code move to data folder)
 
 
 ## Price vs Region

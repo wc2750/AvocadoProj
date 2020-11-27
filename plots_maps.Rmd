@@ -131,8 +131,7 @@ price_trend
 ggplot(data = avo_df, aes(x = date, y = average_price, col=type)) +
   geom_line() +
   facet_wrap(~ type) + 
-  theme_minimal() + theme(legend.position="bottom") +
-  theme_minimal()
+  theme_minimal() + theme(legend.position="bottom") 
 ```
 
 
@@ -198,7 +197,6 @@ plot_grid(conventional_monthly, organic_monthly,conventional_volume, organic_vol
 
 # Seasonal Patterns?:
 
-If there any repeating trends in which the avocado price tend to increase?
 
 ## Price by year
 
@@ -403,7 +401,7 @@ gdp_df =
 gdp_region = 
   left_join(gdp_df, cities_df, by = "state_name") %>% 
   group_by(year, region) %>% 
-  summarize(total_gdp = sum(gdp), region = region) %>% 
+  summarize(total_gdp = mean(gdp), region = region) %>% 
   unique()
 
   
@@ -440,18 +438,123 @@ write_csv(avo_gdp,"data/avo_gdp.csv")
 
 
 ```{r price_region}
-
+convp_region_plt = 
 avo_gdp %>% 
   mutate(year = as.factor(year)) %>% 
   filter(type == "conventional") %>% 
   mutate(
     region = fct_reorder(region, avgp_year) 
   ) %>% 
-  plot_ly(x = ~year, y = ~avgp_year, color = ~region, type = "bar")
+  ggplot(aes(x = year, y = avgp_year, color = region))+
+  geom_bar(stat="identity", position="dodge",alpha = 0.5,aes(fill = region))+
+  theme_minimal()+
+  labs(title="Conventional Avocado Price Change in Different Regions", x="Year", y="Average Price")
 
+
+
+orgp_region_plt = 
+avo_gdp %>% 
+  mutate(year = as.factor(year)) %>% 
+  filter(type == "organic") %>% 
+  mutate(
+    region = fct_reorder(region, avgp_year) 
+  ) %>% 
+  ggplot(aes(x = year, y = avgp_year, color = region))+
+  geom_bar(stat="identity", position="dodge",alpha = 0.5,aes(fill = region))+
+  theme_minimal()+
+  labs(title="Organic Avocado Price Change in Different Regions", x="Year", y="Average Price")
+
+
+regionp_plt_conv  = 
+  avo_df %>% 
+  filter(type == "conventional") %>% 
+  mutate(year = as.factor(year)) %>% 
+  group_by(year, region) %>% 
+  summarise(
+    avgp = mean(average_price),
+    max_p = max(average_price),
+    min_p = min(average_price)
+  ) %>% 
+  ggplot(aes(x = avgp, y = region, color = year))+
+  geom_pointrange(aes(xmax = max_p, xmin = min_p), position = position_dodge(0.5),size = .5)+
+  theme_minimal()+
+  labs(title="Conventional Avocado Price Distribution in Different Regions", x="Average Price", y="Regions")
+
+regionp_plt_org  = 
+  avo_df %>% 
+  filter(type == "organic") %>% 
+  mutate(year = as.factor(year)) %>% 
+  group_by(year, region) %>% 
+  summarise(
+    avgp = mean(average_price),
+    max_p = max(average_price),
+    min_p = min(average_price)
+  ) %>% 
+  ggplot(aes(x = avgp, y = region, color = year))+
+  geom_pointrange(aes(xmax = max_p, xmin = min_p), position = position_dodge(0.5),size = .5)+
+  theme_minimal()+
+  labs(title="Conventional Avocado Price Distribution in Different Regions", x="Average Price", y="Regions")
+
+plot_grid(convp_region_plt, orgp_region_plt, regionp_plt_conv, regionp_plt_org,nrow = 2,ncol = 2)
 ```
 
 
 ## Volume vs Region
 
-# 
+```{r volume_region}
+volume_region_size_plt = 
+avo_df %>% 
+  filter(year != 2018 & !(region %in% c("TotalUS","California","West","Plains","SouthCentral","GreatLakes","Midsouth","Southeast","Northeast"))) %>% 
+  group_by(region, year) %>%
+  summarise(year_sum = sum(total_volume),
+            small_sum = sum(small),
+            large_sum = sum(large),
+            extra_sum = sum(extra_large)) %>% 
+  ungroup(year) %>% 
+  summarise(region_avg = mean(year_sum),Small = mean(small_sum),Large = mean(large_sum), Extra = mean(extra_sum)) %>% 
+  mutate(
+    region = fct_reorder(region, region_avg) 
+  ) %>% 
+  select(- region_avg) %>% 
+  pivot_longer(
+    Small:Extra,
+    names_to = "Size",
+    values_to = "volume"
+  ) %>% 
+  ggplot(aes(x =region, y = volume, fill = Size)) + 
+  geom_bar(stat="identity", position="dodge",alpha = 0.5)+
+  theme_minimal()+
+  theme(axis.text.x=element_text(angle=90,size = 8)) +  
+  labs(title="Region vs. Average Year Consumption, by Size", x="Regions", y="Volume")
+
+  
+  
+ggplotly(volume_region_size_plt)
+```
+
+By adding gdp data to the avocado dataset...
+
+```{r gdp_volume_price}
+ 
+avo_gdp %>% filter(type == "conventional") %>% 
+  group_by(region, year) %>% 
+  mutate(region = fct_reorder(region, total_gdp)) %>% 
+  ggplot(aes(x = total_gdp, y = avgp_year))+
+  geom_point(aes(size = total_gdp, color = region), alpha = 0.5) +
+  facet_wrap(~year)+
+  geom_smooth(se = F,color = conv_color)+
+  theme_minimal()+
+  theme(axis.text.x=element_text(angle=90,size = 8))
+  
+  
+avo_gdp %>% filter(type == "conventional") %>% 
+  group_by(region, year) %>% 
+  mutate(region = fct_reorder(region, total_gdp)) %>% 
+  ggplot(aes(x = total_gdp, y = sum_volume))+
+  geom_point(aes(size = sum_volume, color = region), alpha = 0.5) +
+  facet_wrap(~year)+
+  geom_smooth(se = F,color = conv_color)+
+  theme_minimal()+
+  theme(axis.text.x=element_text(angle=90,size = 8))
+```
+

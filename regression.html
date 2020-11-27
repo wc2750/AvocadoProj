@@ -11,7 +11,7 @@
 
 
 
-<title>Prediction Analysis</title>
+<title>Regression Analysis</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -23,6 +23,7 @@
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
@@ -250,6 +251,9 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
 
 
@@ -356,7 +360,7 @@ div.tocify {
   <a href="trend.html">Trend Graphs</a>
 </li>
 <li>
-  <a href="regression.html">Prediction Analysis</a>
+  <a href="regression.html">Regression Analysis</a>
 </li>
 <li>
   <a href="resource.html">Resource</a>
@@ -377,67 +381,152 @@ div.tocify {
 
 <div class="fluid-row" id="header">
 
-
-
-<h1 class="title toc-ignore">Prediction Analysis</h1>
-
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
 </div>
 
 
-<div id="use-prophet-machine-learning-model-to-predict-price" class="section level2">
-<h2>Use Prophet Machine Learning Model to Predict Price</h2>
-<p>Prophet is a great times-series prediction model. According to the graph below, we know where the average price will be at in the coming year.</p>
-<p><img src="regression_files/figure-html/unnamed-chunk-2-1.png" width="60%" /></p>
+
+<h1 class="title toc-ignore">Regression Analysis</h1>
+
 </div>
-<div id="forecast-components" class="section level2">
-<h2>Forecast Components</h2>
-<p>The two graphs belows tells us the trend, yearly of the time series and how components of the model affect our predictions. <img src="regression_files/figure-html/unnamed-chunk-3-1.png" width="60%" /></p>
+
+
+<p>The main dataset of our project is from kaggle and Hass. This dataset shows the weekly retail volume and average price of Hass avocado, ranging from 2015 to 2018. However, since there is only 11-week data in 2018, we decide to remain the dataset between 2015 and 2017.</p>
+<p>For regression analysis, we are interested in the association between the price of avocado and several predictors. Hence, the outcome is</p>
+<ul>
+<li>quarterly_average_price: the average price of a single avocado within a quarter of a year</li>
+</ul>
+<p>and the predictors considered include:</p>
+<ul>
+<li>type: conventional or organic avocado<br />
+</li>
+<li>year: the year of observation<br />
+</li>
+<li>quarter: the quarter of a year. There are four quarters of a year, quarter 1 stands for Jan, Feb, Mar, quarter 2 stands for Apr, May, Jun, quarter 3 stands for Jul, Aug, Sep, quarter 4 stands for Oct, Nov, Dec<br />
+</li>
+<li>region: regions of the observation. There are 8 resgions to be considered, including California, West, Plains, South Central, Great Lakes, Northeast, Midsouth, Southeast. These 8 regions compose 48 states of the U.S., except for Alaska and Hawaii.</li>
+</ul>
+<div id="trends-of-average-price" class="section level1">
+<h1>Trends of average price</h1>
+<pre class="r"><code>reg_df %&gt;%
+  ggplot(aes(x= quarter, y = quarterly_average_price, group = region, color = region)) +
+  geom_line() +
+  facet_grid(type~year) +
+  ggtitle(&quot;The trends of quarterly average price of each region from 2015 to 2017&quot;) +
+  labs(x = &quot;Quarter&quot;, y = &quot;Average price ($)&quot;)</code></pre>
+<p><img src="regression_files/figure-html/unnamed-chunk-3-1.png" width="80%" style="display: block; margin: auto;" /> Based on the trends plot, we find that the average price of a avocado is different by type, quarter, year, and region. Hence, it is reasonable to consider these four variables as predictors in modeling.</p>
+<div id="mlr-modeling" class="section level2">
+<h2>MLR modeling</h2>
+<p>The model we intend to fit is:</p>
+<p><span class="math display">\[ quarterly \space average \space price = \beta_0 + \beta_1type + \beta_2year + \beta_3quarter + \beta_4 region \]</span></p>
+<pre class="r"><code># regression 1 analysis
+reg1 = lm(quarterly_average_price~type + year + quarter + region, data = reg_df)
+
+reg1 %&gt;%
+  broom::tidy() %&gt;%
+  select(term, estimate, p.value) %&gt;%
+  mutate(term = str_replace(term, &quot;^type&quot;, &quot;Type:&quot;),
+         term = str_replace(term, &quot;^quarter&quot;, &quot;Quarter: &quot;),
+         term = str_replace(term, &quot;^region&quot;, &quot;Region:&quot;)) %&gt;% 
+  knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">-124.9400853</td>
+<td align="right">0.0000026</td>
+</tr>
+<tr class="even">
+<td align="left">Type:organic</td>
+<td align="right">0.4831364</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">year</td>
+<td align="right">0.0624828</td>
+<td align="right">0.0000022</td>
+</tr>
+<tr class="even">
+<td align="left">Quarter: quarter2</td>
+<td align="right">0.0820032</td>
+<td align="right">0.0059938</td>
+</tr>
+<tr class="odd">
+<td align="left">Quarter: quarter3</td>
+<td align="right">0.2381571</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Quarter: quarter4</td>
+<td align="right">0.1833036</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Region:GreatLakes</td>
+<td align="right">-0.0505655</td>
+<td align="right">0.2268371</td>
+</tr>
+<tr class="even">
+<td align="left">Region:Midsouth</td>
+<td align="right">0.0146154</td>
+<td align="right">0.7263595</td>
+</tr>
+<tr class="odd">
+<td align="left">Region:Northeast</td>
+<td align="right">0.2192285</td>
+<td align="right">0.0000004</td>
+</tr>
+<tr class="even">
+<td align="left">Region:Plains</td>
+<td align="right">0.0486241</td>
+<td align="right">0.2451037</td>
+</tr>
+<tr class="odd">
+<td align="left">Region:SouthCentral</td>
+<td align="right">-0.2931731</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Region:Southeast</td>
+<td align="right">0.0116896</td>
+<td align="right">0.7795317</td>
+</tr>
+<tr class="odd">
+<td align="left">Region:West</td>
+<td align="right">-0.1240774</td>
+<td align="right">0.0033267</td>
+</tr>
+</tbody>
+</table>
+<p>Based on the results of the multiple linear regression, the effect of organic type is significant with refenrence on conventional type due to a negligible p-value. And the orgnic type has a relatively large positive estimate value, indicating changes in the organic type variable are associated with positive changes in the response of quarterly average price at the population level.</p>
+<p>Since the average price of avocado is inceasing with increased year based on the previous trend plot, we consider the year as a continuous varibale. And the effect of year is significant with a p-value smaller than 0.05.</p>
+<p>The effect of quarter is also significant with p-value below 0.05 based on the reference on quarter 1,and there are increasing estimates from quarter 2 to quarter 4.</p>
+<p>With reference on California, the effect of region is only significant for Northeast, South Central, and West. Northeast has a higher positive estimate, indicating a significantly greater influence on quarterly average price by Northeast. The estimates of South Central and West are negative, indicating a significantly negative influence on the outcome by these two regions. For the other four regions including Great Lakes, Midsouth, Plains, and Southest, their p-value is above 0.05, indicating their average prices of a quarter are not significantly different from that of california. It is also confirmed from the previous plot that the trends of these four regions are close to that of california.</p>
+<p>The F test statistics of the model is 18.62264 with a p-value below 0.05, indicating the model is significant. The R<sup>2</sup> of 0.8193877 is fairly good, accounting for 82% of variation in the response that is explained by the model.</p>
 </div>
-<div id="regression1-price-as-an-outcome-with-total-volume-and-season-as-covariates" class="section level1">
-<h1>Regression1: price as an outcome with total volume and season as covariates</h1>
-<p><img src="regression_files/figure-html/unnamed-chunk-5-1.png" width="60%" /></p>
-<pre><code>## # A tibble: 5 x 3
-##   term           estimate  p.value
-##   &lt;chr&gt;             &lt;dbl&gt;    &lt;dbl&gt;
-## 1 (Intercept)     1.33e+0 2.11e-38
-## 2 total_volume   -9.79e-9 5.23e- 6
-## 3 Season: spring  7.03e-2 1.61e- 2
-## 4 Season: autum   1.72e-1 1.53e- 6
-## 5 Season: summer  1.49e-1 1.78e- 6</code></pre>
-<p>Winter as reference. All predictor has p-value smaller than 0.05.</p>
+<div id="regression-diagnostics" class="section level2">
+<h2>Regression diagnostics</h2>
+<p>To check whether our model meets the assumptions of the analysis, regression diagnostic plots are created:</p>
+<pre class="r"><code>par(mfrow=c(2,2))
+plot(reg1)</code></pre>
+<p><img src="regression_files/figure-html/unnamed-chunk-5-1.png" width="80%" style="display: block; margin: auto;" /> In the Residuals vs Fitted plot, the red line showing the average value of the residuals at each value of fitted value is pretty flat, and points appear to be randomly spread out about the line, indicating no discerninle non-linear trends or changes in variability. The normal QQ plot is also good where the residuals match to the diagonal line, indicating these residuals look to be normally distributed. In the leverage plot, there is no evidence of outliers due to the abscence of Cook’ distance dashed line. Generally, the assumptions are all satisfied and our model is valid.</p>
 </div>
-<div id="regression2-average-price-vs-total-volume-for-type-conventional" class="section level1">
-<h1>Regression2: Average price vs total volume for type “conventional”</h1>
-<p><img src="regression_files/figure-html/unnamed-chunk-7-1.png" width="60%" /></p>
+<div id="model-comparison" class="section level2">
+<h2>Model comparison</h2>
+<p>We want to add GDP as another predictor in our model and compare with the previous model. Our new model is: <span class="math display">\[ quarterly \space average \space price = \beta_0 + \beta_1type + \beta_2year + \beta_3quarter + \beta_4 region +\beta_5 gdp\]</span></p>
 </div>
-<div id="cross-validation-for-average-price-vs-total-volume-for-type-conventional-for-type-conventional" class="section level1">
-<h1>Cross-validation for average price vs total volume for type “conventional” for type “conventional”</h1>
-<p><img src="regression_files/figure-html/unnamed-chunk-10-1.png" width="60%" /></p>
-<p><img src="regression_files/figure-html/unnamed-chunk-12-1.png" width="60%" /></p>
-<pre><code>## # A tibble: 2 x 3
-##   term              estimate  p.value
-##   &lt;chr&gt;                &lt;dbl&gt;    &lt;dbl&gt;
-## 1 (Intercept)   1.58         7.71e-57
-## 2 total_volume -0.0000000145 1.42e-12</code></pre>
-<p><img src="regression_files/figure-html/unnamed-chunk-14-1.png" width="60%" /></p>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre><code>## # A tibble: 2 x 2
-##   term               boot_se
-##   &lt;chr&gt;                &lt;dbl&gt;
-## 1 (Intercept)  0.0830       
-## 2 total_volume 0.00000000229</code></pre>
-<p>For a simple linear regression, we can show the fitted lines for each bootstrap sample to build intuition for these results.</p>
-<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
-<p><img src="regression_files/figure-html/unnamed-chunk-16-1.png" width="60%" /></p>
-</div>
-<div id="hypothesis-test-small-model-vs-large-model" class="section level1">
-<h1>Hypothesis test: small model vs large model</h1>
-<pre><code>## # A tibble: 2 x 6
-##   res.df   rss    df  sumsq statistic      p.value
-##    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;        &lt;dbl&gt;
-## 1    167  3.77    NA NA          NA   NA          
-## 2    164  3.11     3  0.655      11.5  0.000000707</code></pre>
-<p>Reject small model since p-value is smaller than 0.05. Regression 1 is a better fit regression discussing the association with average price as outcome with total volume and season as predictors.</p>
 </div>
 
 
@@ -475,6 +564,11 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
 <script>
 $(document).ready(function ()  {

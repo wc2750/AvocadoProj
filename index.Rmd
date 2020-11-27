@@ -10,7 +10,7 @@ output:
 
 <center>
 
-![](homepaage.png){width=500px}
+![](image\homepaage.png){width=500px}
 </center>
 
 <br>

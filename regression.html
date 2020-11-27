@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Regression Analysis</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 61px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h2 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h3 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h4 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h5 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h6 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="trend.html">Trend Graphs</a>
+</li>
+<li>
+  <a href="regression.html">Regression Analysis</a>
+</li>
+<li>
+  <a href="resource.html">Resource</a>
+</li>
+<li>
+  <a href="https://bc2918.shinyapps.io/interactive/#section-avocado-between-region">Interactive Map</a>
+</li>
+<li>
+  <a href="https://github.com/wc2750/AvocadoProj.github.io">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Regression Analysis</h1>
+
+</div>
+
+
+<p>The main dataset of our project is from kaggle and Hass. This dataset shows the weekly retail volume and average price of Hass avocado, ranging from 2015 to 2018. However, since there is only 11-week data in 2018, we decide to remain the dataset between 2015 and 2017.</p>
+<p>For regression analysis, we are interested in the association between the price of avocado and several predictors. Hence, the outcome is</p>
+<ul>
+<li>quarterly_average_price: the average price of a single avocado within a quarter of a year</li>
+</ul>
+<p>and the predictors considered include:</p>
+<ul>
+<li>type: conventional or organic avocado<br />
+</li>
+<li>year: the year of observation<br />
+</li>
+<li>quarter: the quarter of a year. There are four quarters of a year, quarter 1 stands for Jan, Feb, Mar, quarter 2 stands for Apr, May, Jun, quarter 3 stands for Jul, Aug, Sep, quarter 4 stands for Oct, Nov, Dec<br />
+</li>
+<li>region: regions of the observation. There are 8 resgions to be considered, including California, West, Plains, South Central, Great Lakes, Northeast, Midsouth, Southeast. These 8 regions compose 48 states of the U.S., except for Alaska and Hawaii.</li>
+</ul>
+<div id="trends-of-average-price" class="section level1">
+<h1>Trends of average price</h1>
+<pre class="r"><code>reg_df %&gt;%
+  ggplot(aes(x= quarter, y = quarterly_average_price, group = region, color = region)) +
+  geom_line() +
+  facet_grid(type~year) +
+  ggtitle(&quot;The trends of quarterly average price of each region from 2015 to 2017&quot;) +
+  labs(x = &quot;Quarter&quot;, y = &quot;Average price ($)&quot;)</code></pre>
+<p><img src="regression_files/figure-html/unnamed-chunk-3-1.png" width="80%" style="display: block; margin: auto;" /> Based on the trends plot, we find that the average price of a avocado is different by type, quarter, year, and region. Hence, it is reasonable to consider these four variables as predictors in modeling.</p>
+<div id="mlr-modeling" class="section level2">
+<h2>MLR modeling</h2>
+<p>The model we intend to fit is:</p>
+<p><span class="math display">\[ quarterly \space average \space price = \beta_0 + \beta_1type + \beta_2year + \beta_3quarter + \beta_4 region \]</span></p>
+<pre class="r"><code># regression 1 analysis
+reg1 = lm(quarterly_average_price~type + year + quarter + region, data = reg_df)
+
+reg1 %&gt;%
+  broom::tidy() %&gt;%
+  select(term, estimate, p.value) %&gt;%
+  mutate(term = str_replace(term, &quot;^type&quot;, &quot;Type:&quot;),
+         term = str_replace(term, &quot;^quarter&quot;, &quot;Quarter: &quot;),
+         term = str_replace(term, &quot;^region&quot;, &quot;Region:&quot;)) %&gt;% 
+  knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">-124.9400853</td>
+<td align="right">0.0000026</td>
+</tr>
+<tr class="even">
+<td align="left">Type:organic</td>
+<td align="right">0.4831364</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">year</td>
+<td align="right">0.0624828</td>
+<td align="right">0.0000022</td>
+</tr>
+<tr class="even">
+<td align="left">Quarter: quarter2</td>
+<td align="right">0.0820032</td>
+<td align="right">0.0059938</td>
+</tr>
+<tr class="odd">
+<td align="left">Quarter: quarter3</td>
+<td align="right">0.2381571</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Quarter: quarter4</td>
+<td align="right">0.1833036</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">Region:GreatLakes</td>
+<td align="right">-0.0505655</td>
+<td align="right">0.2268371</td>
+</tr>
+<tr class="even">
+<td align="left">Region:Midsouth</td>
+<td align="right">0.0146154</td>
+<td align="right">0.7263595</td>
+</tr>
+<tr class="odd">
+<td align="left">Region:Northeast</td>
+<td align="right">0.2192285</td>
+<td align="right">0.0000004</td>
+</tr>
+<tr class="even">
+<td align="left">Region:Plains</td>
+<td align="right">0.0486241</td>
+<td align="right">0.2451037</td>
+</tr>
+<tr class="odd">
+<td align="left">Region:SouthCentral</td>
+<td align="right">-0.2931731</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">Region:Southeast</td>
+<td align="right">0.0116896</td>
+<td align="right">0.7795317</td>
+</tr>
+<tr class="odd">
+<td align="left">Region:West</td>
+<td align="right">-0.1240774</td>
+<td align="right">0.0033267</td>
+</tr>
+</tbody>
+</table>
+<p>Based on the results of the multiple linear regression, the effect of organic type is significant with refenrence on conventional type due to a negligible p-value. And the orgnic type has a relatively large positive estimate value, indicating changes in the organic type variable are associated with positive changes in the response of quarterly average price at the population level.</p>
+<p>Since the average price of avocado is inceasing with increased year based on the previous trend plot, we consider the year as a continuous varibale. And the effect of year is significant with a p-value smaller than 0.05.</p>
+<p>The effect of quarter is also significant with p-value below 0.05 based on the reference on quarter 1,and there are increasing estimates from quarter 2 to quarter 4.</p>
+<p>With reference on California, the effect of region is only significant for Northeast, South Central, and West. Northeast has a higher positive estimate, indicating a significantly greater influence on quarterly average price by Northeast. The estimates of South Central and West are negative, indicating a significantly negative influence on the outcome by these two regions. For the other four regions including Great Lakes, Midsouth, Plains, and Southest, their p-value is above 0.05, indicating their average prices of a quarter are not significantly different from that of california. It is also confirmed from the previous plot that the trends of these four regions are close to that of california.</p>
+<p>The F test statistics of the model is 18.62264 with a p-value below 0.05, indicating the model is significant. The R<sup>2</sup> of 0.8193877 is fairly good, accounting for 82% of variation in the response that is explained by the model.</p>
+</div>
+<div id="regression-diagnostics" class="section level2">
+<h2>Regression diagnostics</h2>
+<p>To check whether our model meets the assumptions of the analysis, regression diagnostic plots are created:</p>
+<pre class="r"><code>par(mfrow=c(2,2))
+plot(reg1)</code></pre>
+<p><img src="regression_files/figure-html/unnamed-chunk-5-1.png" width="80%" style="display: block; margin: auto;" /> In the Residuals vs Fitted plot, the red line showing the average value of the residuals at each value of fitted value is pretty flat, and points appear to be randomly spread out about the line, indicating no discerninle non-linear trends or changes in variability. The normal QQ plot is also good where the residuals match to the diagonal line, indicating these residuals look to be normally distributed. In the leverage plot, there is no evidence of outliers due to the abscence of Cook’ distance dashed line. Generally, the assumptions are all satisfied and our model is valid.</p>
+</div>
+<div id="model-comparison" class="section level2">
+<h2>Model comparison</h2>
+<p>We want to add GDP as another predictor in our model and compare with the previous model. Our new model is: <span class="math display">\[ quarterly \space average \space price = \beta_0 + \beta_1type + \beta_2year + \beta_3quarter + \beta_4 region +\beta_5 gdp\]</span></p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

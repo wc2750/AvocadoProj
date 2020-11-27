@@ -7,8 +7,6 @@ navbar:
       href: trend.html
     - text: "Regression Analysis"
       href: regression.html
-    - text: "Price Prediction!"
-      href: prediction.html
     - text: "Resource"
       href: resource.html
     - text: "Interactive Map"

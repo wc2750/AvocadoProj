@@ -10,7 +10,7 @@ output:
 
 <center>
 
-![](homepaage.png){width=500px}
+![](image\homepaage.png){width=500px}
 </center>
 
 <br>
@@ -25,8 +25,9 @@ We want to perform EDA to the original data and implement a prediction model of 
 
 # Data
 * `Avocado price data`: [Kaggle](https://www.kaggle.com/neuromusic/avocado-prices) 
-  + The dataset, updated till March, 2018, was compiled by Justin Kiggins who obtained the data source from [Hass Avocado Board](https://hassavocadoboard.com/)
-* `State GDP data`: [Kaggle](https://www.kaggle.com/solorzano/gdp-per-capita-in-us-states?select=bea-gdp-by-state.csv)
+  + The main avocado dataset, updated till March, 2018, was compiled by Justin Kiggins who obtained the data source from [Hass Avocado Board](https://hassavocadoboard.com/)
+* `State GDP data`: 
+  + The dataset including the annually GDP by the states of the U.S. between 2013 and 2017 can be accessed [here](https://www.kaggle.com/solorzano/gdp-per-capita-in-us-states?select=bea-gdp-by-state.csv)
 
 
 # Findings
@@ -39,7 +40,7 @@ Our report can be found [here](report.html).
 # Website Navigation
 - **Trend Graphs**: Graphs of our Main Interest
 - **Regression Analysis**: Detailed Analysis Report
-- **Resource**: Resource for Suicide Prevention
+- **Resource**: Resources for Avocado Facts and Recipes
 
 # Contributors
 - BeiBei Cao | [Website](https://bc2918.github.io/)

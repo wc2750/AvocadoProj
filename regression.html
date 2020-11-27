@@ -363,10 +363,10 @@ div.tocify {
   <a href="regression.html">Regression Analysis</a>
 </li>
 <li>
-  <a href="resource.html">Resource</a>
+  <a href="https://bc2918.shinyapps.io/interactive/">Interactive Map</a>
 </li>
 <li>
-  <a href="https://bc2918.shinyapps.io/interactive/#section-avocado-between-region">Interactive Map</a>
+  <a href="resource.html">Resource</a>
 </li>
 <li>
   <a href="https://github.com/wc2750/AvocadoProj.github.io">
@@ -436,77 +436,161 @@ reg1 %&gt;%
   knitr::kable()</code></pre>
 <table>
 <thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">estimate</th>
-<th align="right">p.value</th>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:right;">
+estimate
+</th>
+<th style="text-align:right;">
+p.value
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td align="left">(Intercept)</td>
-<td align="right">-124.9400853</td>
-<td align="right">0.0000026</td>
+<tr>
+<td style="text-align:left;">
+(Intercept)
+</td>
+<td style="text-align:right;">
+-124.9400853
+</td>
+<td style="text-align:right;">
+0.0000026
+</td>
 </tr>
-<tr class="even">
-<td align="left">Type:organic</td>
-<td align="right">0.4831364</td>
-<td align="right">0.0000000</td>
+<tr>
+<td style="text-align:left;">
+Type:organic
+</td>
+<td style="text-align:right;">
+0.4831364
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
 </tr>
-<tr class="odd">
-<td align="left">year</td>
-<td align="right">0.0624828</td>
-<td align="right">0.0000022</td>
+<tr>
+<td style="text-align:left;">
+year
+</td>
+<td style="text-align:right;">
+0.0624828
+</td>
+<td style="text-align:right;">
+0.0000022
+</td>
 </tr>
-<tr class="even">
-<td align="left">Quarter: quarter2</td>
-<td align="right">0.0820032</td>
-<td align="right">0.0059938</td>
+<tr>
+<td style="text-align:left;">
+Quarter: quarter2
+</td>
+<td style="text-align:right;">
+0.0820032
+</td>
+<td style="text-align:right;">
+0.0059938
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Quarter: quarter3</td>
-<td align="right">0.2381571</td>
-<td align="right">0.0000000</td>
+<tr>
+<td style="text-align:left;">
+Quarter: quarter3
+</td>
+<td style="text-align:right;">
+0.2381571
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
 </tr>
-<tr class="even">
-<td align="left">Quarter: quarter4</td>
-<td align="right">0.1833036</td>
-<td align="right">0.0000000</td>
+<tr>
+<td style="text-align:left;">
+Quarter: quarter4
+</td>
+<td style="text-align:right;">
+0.1833036
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Region:GreatLakes</td>
-<td align="right">-0.0505655</td>
-<td align="right">0.2268371</td>
+<tr>
+<td style="text-align:left;">
+Region:GreatLakes
+</td>
+<td style="text-align:right;">
+-0.0505655
+</td>
+<td style="text-align:right;">
+0.2268371
+</td>
 </tr>
-<tr class="even">
-<td align="left">Region:Midsouth</td>
-<td align="right">0.0146154</td>
-<td align="right">0.7263595</td>
+<tr>
+<td style="text-align:left;">
+Region:Midsouth
+</td>
+<td style="text-align:right;">
+0.0146154
+</td>
+<td style="text-align:right;">
+0.7263595
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Region:Northeast</td>
-<td align="right">0.2192285</td>
-<td align="right">0.0000004</td>
+<tr>
+<td style="text-align:left;">
+Region:Northeast
+</td>
+<td style="text-align:right;">
+0.2192285
+</td>
+<td style="text-align:right;">
+0.0000004
+</td>
 </tr>
-<tr class="even">
-<td align="left">Region:Plains</td>
-<td align="right">0.0486241</td>
-<td align="right">0.2451037</td>
+<tr>
+<td style="text-align:left;">
+Region:Plains
+</td>
+<td style="text-align:right;">
+0.0486241
+</td>
+<td style="text-align:right;">
+0.2451037
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Region:SouthCentral</td>
-<td align="right">-0.2931731</td>
-<td align="right">0.0000000</td>
+<tr>
+<td style="text-align:left;">
+Region:SouthCentral
+</td>
+<td style="text-align:right;">
+-0.2931731
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
 </tr>
-<tr class="even">
-<td align="left">Region:Southeast</td>
-<td align="right">0.0116896</td>
-<td align="right">0.7795317</td>
+<tr>
+<td style="text-align:left;">
+Region:Southeast
+</td>
+<td style="text-align:right;">
+0.0116896
+</td>
+<td style="text-align:right;">
+0.7795317
+</td>
 </tr>
-<tr class="odd">
-<td align="left">Region:West</td>
-<td align="right">-0.1240774</td>
-<td align="right">0.0033267</td>
+<tr>
+<td style="text-align:left;">
+Region:West
+</td>
+<td style="text-align:right;">
+-0.1240774
+</td>
+<td style="text-align:right;">
+0.0033267
+</td>
 </tr>
 </tbody>
 </table>

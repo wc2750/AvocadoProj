@@ -27,7 +27,9 @@ library(patchwork)
 knitr::opts_chunk$set(
   warning = FALSE,
   message = FALSE,
-  echo = FALSE)
+  echo = FALSE,
+  include = FALSE
+  )
   theme_set(theme_bw() + 
           theme(legend.position = "bottom",
                 legend.title = element_blank(),

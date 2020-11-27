@@ -1,6 +1,9 @@
 ---
 title: "map test"
 output: html_document
+
+
+runtime: shiny
 ---
 
 ```{r setup, include = FALSE}
@@ -54,8 +57,9 @@ avo_df = read_csv("data/avocado.csv") %>%
 ```
 
 
-Divide states by region.
+
 ```{r}
+# Divide states by region.
 state_df = tibble(
   state = state.abb,
   state_name = state.name
@@ -118,8 +122,9 @@ checkboxGroupInput(
 ```
 
 
-Filter input choice 
+
 ```{r}
+# Filter input choice 
 temp = 
   left_join(state_df, reg_df) %>% 
   filter(
@@ -131,8 +136,9 @@ temp =
 ```
 
 
-Plot with map 
+
 ```{r}
+# Plot with map 
 g <- list(
   scope = 'usa',
   projection = list(type = 'albers usa'),

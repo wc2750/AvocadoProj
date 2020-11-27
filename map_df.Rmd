@@ -1,16 +1,21 @@
 ---
 title: "map test"
-output: 
-  html_document: 
-    code_folding: hide
-    toc: true
-    toc_float: true
+output: html_document
 ---
 
 ```{r setup, include = FALSE}
+library(flexdashboard)
+library(shiny)
+library(readxl)
 library(tidyverse)
-library(modelr)
-library(mgcv)
+library(plotly)
+library(rgdal)
+library(maps)
+library(devtools)
+library(leaflet)
+library(maptools)
+library(BAMMtools)
+library(patchwork)
 
 knitr::opts_chunk$set(
 fig.width = 9, 
@@ -47,16 +52,20 @@ avo_df = read_csv("data/avocado.csv") %>%
     extra_large = x4770,
   ) 
 ```
+
+
+Divide states by region.
 ```{r}
 state_df = tibble(
-  state = state.abb
+  state = state.abb,
+  state_name = state.name
 ) %>% 
   mutate(
     region = case_when(
       (state %in% c("CA"))==TRUE ~ "California",
       (state %in% c("WA","OR","ID","MT","WY","NV","UT","CO","AZ","NM"))==TRUE ~ "West",
       (state %in%c("ND","SD","NE","KS","MN","IA","MO"))==TRUE ~"Plains",
-      (state %in% c("tx","OK","AR","LA"))==TRUE ~ "SouthCentral",
+      (state %in% c("TX","OK","AR","LA"))==TRUE ~ "SouthCentral",
       (state %in% c("WI","IL","IN","OH","MI"))==TRUE ~ "GreatLakes",
       (state %in% c("PA","NY","VT","ME","NH","MA","RI","CT","NJ"))==TRUE ~ "Northeast",
       (state %in% c("TN","KY","WV","DE","MD","DC","VA","NC"))==TRUE ~ "Midsouth",
@@ -65,6 +74,86 @@ state_df = tibble(
     )
   )
 
-print(state_df)
+state_df %>% subset(is.na(region))
+```
+
+```{r}
+reg_df = 
+  avo_df %>%
+  filter(year != 2018,
+         region %in% c("California", "West", "Plains", "SouthCentral", "GreatLakes", "Northeast", "Midsouth", "Southeast")) %>%
+  mutate(quarter = if_else(month %in% c(1,2,3), "quarter1", if_else(month %in% c(4,5,6), "quarter2", if_else(month %in% c(7,8,9), "quarter3", "quarter4")))) %>%
+  select(year, quarter, type, region, average_price) %>%
+  group_by(year, quarter, type, region) %>%
+  summarise(quarterly_average_price = mean(average_price))
+```
+
+
+
+
+```{r include = FALSE}
+
+# Pull list of region
+region = avo_df %>% pull(region) %>% unique()
+
+# Create input
+selectInput(
+  "year_choice_1",
+  label=h3("Select Year"),
+  choices = c(2015,2016,2017)
+)
+selectInput(
+  "quarter_choice_1", 
+  label=h3("Select Quarter"),
+  choices = c("quarter1", "quarter2", "quarter3", "quarter4")
+  )
+
+checkboxGroupInput(
+  "type_choice_1", 
+  label=h3("Select Type"),
+  choices = c("conventional", "organic")
+  )
+
+
+```
+
+
+Filter input choice 
+```{r}
+temp = 
+  left_join(state_df, reg_df) %>% 
+  filter(
+      year == 2015 &
+      quarter == "quarter1" &
+      type == "conventional"
+    ) 
+#%>%  filter(state !="AK" & state!="HI")
+```
+
+
+Plot with map 
+```{r}
+g <- list(
+  scope = 'usa',
+  projection = list(type = 'albers usa'),
+  lakecolor = toRGB('white')
+)
+
+temp %>% 
+  rename(Price = quarterly_average_price) %>% 
+  plot_geo() %>%
+  add_trace(
+    z = ~Price,
+    colors = "Greens",
+    locations = temp$state, 
+    text = temp$region, 
+    span = I(0),
+    locationmode = 'USA-states'
+  ) %>%
+  layout(
+    geo = g,
+    title = "Quarterly Average Avocado Price"
+    )
+
 ```
 

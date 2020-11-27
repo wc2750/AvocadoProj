@@ -1,25 +1,12 @@
 ---
 title: "Regression Analysis"
 output: 
-  html_document: 
-    code_folding: hide
+  html_document:
     toc: true
     toc_float: true
 ---
 
-The main dataset of our project is from kaggle and Hass. This dataset shows the weekly retail volume and average price of Hass avocado, ranging from 2015 to 2018. However, since there is only 11-week data in 2018, we decide to remain the dataset between 2015 and 2017.
-
-For regression analysis, we are interested in the association between the price of avocado and several predictors. Hence, the outcome is
-
-+ quarterly_average_price: the average price of a single avocado within a quarter of a year
-
-and the predictors considered include:
-
-+ type: conventional or organic avocado\
-+ year: the year of observation\
-+ quarter: the quarter of a year. There are four quarters of a year, quarter 1 stands for Jan, Feb, Mar, quarter 2 stands for Apr, May, Jun, quarter 3 stands for Jul, Aug, Sep, quarter 4 stands for Oct, Nov, Dec\
-+ region: regions of the observation. There are 8 resgions to be considered, including California, West, Plains, South Central, Great Lakes, Northeast, Midsouth, Southeast. These 8 regions compose 48 states of the U.S., except for Alaska and Hawaii.
-
+Our main avocado dataset shows the weekly retail volume and average price of Hass avocado, ranging from 2015 to 2018. However, since there is only 11-week data in 2018, we decide to only keep the data between 2015 and 2017.
 
 ```{r setup, include = FALSE}
 library(tidyverse)
@@ -27,7 +14,8 @@ library(modelr)
 library(mgcv)
 
 knitr::opts_chunk$set(
-fig.width = 9, 
+echo = FALSE,
+  fig.width = 9, 
   fig.height = 6,
   out.width = "80%"
 )
@@ -64,7 +52,7 @@ avo_df = read_csv("data/avocado.csv") %>%
 
 ```{r message = F, include = FALSE}
 # tidy avo_df for regression analysis
-reg_df = 
+reg1_df = 
   avo_df %>%
   filter(year != 2018,
          region %in% c("California", "West", "Plains", "SouthCentral", "GreatLakes", "Northeast", "Midsouth", "Southeast")) %>%
@@ -75,23 +63,36 @@ reg_df =
 ```
 
 # Trends of average price
+For the multiple linear regression analysis, we are interested in the association between the price of avocado and several predictors. We want to firstly get familiar with the trends of average price of a avocado by potential predictors - type, quarter, year, and region.
+
 ```{r fig.align = 'center'}
-reg_df %>%
+reg1_df %>%
   ggplot(aes(x= quarter, y = quarterly_average_price, group = region, color = region)) +
   geom_line() +
   facet_grid(type~year) +
   ggtitle("The trends of quarterly average price of each region from 2015 to 2017") +
   labs(x = "Quarter", y = "Average price ($)")
 ```
-Based on the trends plot, we find that the average price of a avocado is different by type, quarter, year, and region. Hence, it is reasonable to consider these four variables as predictors in modeling.
+Based on the trends plot, we find that the average price of a avocado is different by the four candidate predictors. Hence, it is reasonable to consider them as predictors in modeling.
 
 ## MLR modeling
+In our designed model, the outcome is
+
++ quarterly_average_price: the average price of a single avocado within a quarter of a year
+
+and the predictors considered include:
+
++ type: conventional or organic avocado\
++ year: the year of observation\
++ quarter: the quarter of a year. There are four quarters of a year, quarter 1 stands for Jan, Feb, Mar, quarter 2 stands for Apr, May, Jun, quarter 3 stands for Jul, Aug, Sep, quarter 4 stands for Oct, Nov, Dec\
++ region: regions of the observation. There are 8 resgions to be considered, including California, West, Plains, South Central, Great Lakes, Northeast, Midsouth, Southeast. These 8 regions compose 48 states of the U.S., except for Alaska and Hawaii.
+
 The model we intend to fit is:
 
 $$ quarterly \space average \space price = \beta_0 + \beta_1type + \beta_2year + \beta_3quarter + \beta_4 region $$
-```{r}
+```{r message = FALSE, warning = FALSE}
 # regression 1 analysis
-reg1 = lm(quarterly_average_price~type + year + quarter + region, data = reg_df)
+reg1 = lm(quarterly_average_price~type + year + quarter + region, data = reg1_df)
 
 reg1 %>%
   broom::tidy() %>%
@@ -120,6 +121,67 @@ plot(reg1)
 ```
 In the Residuals vs Fitted plot, the red line showing the average value of the residuals at each value of fitted value is pretty flat, and points appear to be randomly spread out about the line, indicating no discerninle non-linear trends or changes in variability. The normal QQ plot is also good where the residuals match to the diagonal line, indicating these residuals look to be normally distributed. In the leverage plot, there is no evidence of outliers due to the abscence of Cook' distance dashed line. Generally, the assumptions are all satisfied and our model is valid.
 
-## Model comparison
-We want to add GDP as another predictor in our model and compare with the previous model. Our new model is:
-$$ quarterly \space average \space price = \beta_0 + \beta_1type + \beta_2year + \beta_3quarter + \beta_4 region +\beta_5 gdp$$
+## How about GDP per capita as another predictor?
+We want to test whether GDP per capita would influence the response of the average price of avocado. Since we only have the annually GDP by the 8 regions of the U.S., we decide to consider annually average price of a avocado as the outcome and remove quarter variable from the previous model. Our new null model is:
+$$ annually \space average \space price = \beta_0 + \beta_1type + \beta_2year + \beta_3 region $$
+
+The alternative model with additional GDP per capita variable is :
+$$ annually \space average \space price = \beta_0 + \beta_1type + \beta_2year + \beta_3 region +\beta_4 gdp \space per \space capita $$
+
+The partial F-test for nested models is performed through ANOVA to compare the small and large models. In addition, cross validation is visualized to show the value of root-mean-squared error (RMSE). The results are shown below:
+
+```{r message = FALSE, include = FALSE}
+reg2_df = read_csv("data/avo_gdp.csv") %>%
+  select (type, year, region, average_gdp, avgp_year) %>%
+  rename(annually_average_price = avgp_year,
+         gdp_per_capita = average_gdp)
+```
+
+```{r}
+# ANOVA test comparing Model 2 vs Model 3 (nested: small vs large model)
+reg2 = lm(annually_average_price~type + year + region, data = reg2_df)
+reg3 = lm(annually_average_price~type + year + region + gdp_per_capita, data = reg2_df)
+
+anova(reg2, reg3) %>%
+  tibble() %>%
+  knitr::kable()
+```
+
+```{r  fig.align = 'center'}
+set.seed(111)
+# cross-validation
+cv_df = 
+  crossv_mc(reg2_df, 100) %>%
+  mutate(
+    train = map(train, as_tibble),
+    test = map(test, as_tibble)
+  )
+
+cv_df = 
+  cv_df %>%
+  mutate(
+    model2 = map(train, ~reg2),
+    model3 = map(train, ~reg3)) %>%
+  mutate(
+    rmse_model2 = map2_dbl(model2, test, ~rmse(model = .x, data = .y)),
+    rmse_model3 = map2_dbl(model3, test, ~rmse(model = .x, data = .y)))
+
+cv_df %>% 
+  select(starts_with("rmse")) %>% 
+  pivot_longer(
+    everything(),
+    names_to = "model", 
+    values_to = "rmse",
+    names_prefix = "rmse_") %>% 
+  mutate(model = fct_inorder(model)) %>%
+  mutate(model = if_else(model == "model2", "null model without GDP", "alternative model with GDP")) %>%
+  ggplot(aes(x = model, y = rmse)) + geom_violin()
+```
+
+```{r include = FALSE}
+# partial R^2^ of GDP
+anova(reg2)
+anova(reg3)
+```
+
+Although the p-value of 0.085 is small, it is higher than 0.05. Hence, with a significance level of 0.05, We fail to reject the small model without the GDP per capita predictor. Given type, year, region predictors in the model, the partial R^2^ of the GDP per capita predictor is 0.08, which means the marginal contribution of GDP per capita to the variation in the annually average price of a avocado is only 8%. Based on the cross validation, the prediction error distributions of the two models are similar. Hence, we conclude that GDP per capita is not a significant predictor of the annually average price of a avocado. Future study of the price of avocado should be better consider the other potential predictors.

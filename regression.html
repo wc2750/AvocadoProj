@@ -23,7 +23,6 @@
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
-<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
@@ -251,9 +250,6 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
-<style type="text/css">
-.code-folding-btn { margin-bottom: 4px; }
-</style>
 
 
 
@@ -381,14 +377,6 @@ div.tocify {
 
 <div class="fluid-row" id="header">
 
-<div class="btn-group pull-right">
-<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
-<ul class="dropdown-menu" style="min-width: 50px;">
-<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
-<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
-</ul>
-</div>
-
 
 
 <h1 class="title toc-ignore">Regression Analysis</h1>
@@ -396,8 +384,14 @@ div.tocify {
 </div>
 
 
-<p>The main dataset of our project is from kaggle and Hass. This dataset shows the weekly retail volume and average price of Hass avocado, ranging from 2015 to 2018. However, since there is only 11-week data in 2018, we decide to remain the dataset between 2015 and 2017.</p>
-<p>For regression analysis, we are interested in the association between the price of avocado and several predictors. Hence, the outcome is</p>
+<p>Our main avocado dataset shows the weekly retail volume and average price of Hass avocado, ranging from 2015 to 2018. However, since there is only 11-week data in 2018, we decide to only keep the data between 2015 and 2017.</p>
+<div id="trends-of-average-price" class="section level1">
+<h1>Trends of average price</h1>
+<p>For the multiple linear regression analysis, we are interested in the association between the price of avocado and several predictors. We want to firstly get familiar with the trends of average price of a avocado by potential predictors - type, quarter, year, and region.</p>
+<p><img src="regression_files/figure-html/unnamed-chunk-3-1.png" width="80%" style="display: block; margin: auto;" /> Based on the trends plot, we find that the average price of a avocado is different by the four candidate predictors. Hence, it is reasonable to consider them as predictors in modeling.</p>
+<div id="mlr-modeling" class="section level2">
+<h2>MLR modeling</h2>
+<p>In our designed model, the outcome is</p>
 <ul>
 <li>quarterly_average_price: the average price of a single avocado within a quarter of a year</li>
 </ul>
@@ -411,186 +405,81 @@ div.tocify {
 </li>
 <li>region: regions of the observation. There are 8 resgions to be considered, including California, West, Plains, South Central, Great Lakes, Northeast, Midsouth, Southeast. These 8 regions compose 48 states of the U.S., except for Alaska and Hawaii.</li>
 </ul>
-<div id="trends-of-average-price" class="section level1">
-<h1>Trends of average price</h1>
-<pre class="r"><code>reg_df %&gt;%
-  ggplot(aes(x= quarter, y = quarterly_average_price, group = region, color = region)) +
-  geom_line() +
-  facet_grid(type~year) +
-  ggtitle(&quot;The trends of quarterly average price of each region from 2015 to 2017&quot;) +
-  labs(x = &quot;Quarter&quot;, y = &quot;Average price ($)&quot;)</code></pre>
-<p><img src="regression_files/figure-html/unnamed-chunk-3-1.png" width="80%" style="display: block; margin: auto;" /> Based on the trends plot, we find that the average price of a avocado is different by type, quarter, year, and region. Hence, it is reasonable to consider these four variables as predictors in modeling.</p>
-<div id="mlr-modeling" class="section level2">
-<h2>MLR modeling</h2>
 <p>The model we intend to fit is:</p>
 <p><span class="math display">\[ quarterly \space average \space price = \beta_0 + \beta_1type + \beta_2year + \beta_3quarter + \beta_4 region \]</span></p>
-<pre class="r"><code># regression 1 analysis
-reg1 = lm(quarterly_average_price~type + year + quarter + region, data = reg_df)
-
-reg1 %&gt;%
-  broom::tidy() %&gt;%
-  select(term, estimate, p.value) %&gt;%
-  mutate(term = str_replace(term, &quot;^type&quot;, &quot;Type:&quot;),
-         term = str_replace(term, &quot;^quarter&quot;, &quot;Quarter: &quot;),
-         term = str_replace(term, &quot;^region&quot;, &quot;Region:&quot;)) %&gt;% 
-  knitr::kable()</code></pre>
 <table>
 <thead>
-<tr>
-<th style="text-align:left;">
-term
-</th>
-<th style="text-align:right;">
-estimate
-</th>
-<th style="text-align:right;">
-p.value
-</th>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">p.value</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td style="text-align:left;">
-(Intercept)
-</td>
-<td style="text-align:right;">
--124.9400853
-</td>
-<td style="text-align:right;">
-0.0000026
-</td>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">-124.9400853</td>
+<td align="right">0.0000026</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-Type:organic
-</td>
-<td style="text-align:right;">
-0.4831364
-</td>
-<td style="text-align:right;">
-0.0000000
-</td>
+<tr class="even">
+<td align="left">Type:organic</td>
+<td align="right">0.4831364</td>
+<td align="right">0.0000000</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-year
-</td>
-<td style="text-align:right;">
-0.0624828
-</td>
-<td style="text-align:right;">
-0.0000022
-</td>
+<tr class="odd">
+<td align="left">year</td>
+<td align="right">0.0624828</td>
+<td align="right">0.0000022</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-Quarter: quarter2
-</td>
-<td style="text-align:right;">
-0.0820032
-</td>
-<td style="text-align:right;">
-0.0059938
-</td>
+<tr class="even">
+<td align="left">Quarter: quarter2</td>
+<td align="right">0.0820032</td>
+<td align="right">0.0059938</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-Quarter: quarter3
-</td>
-<td style="text-align:right;">
-0.2381571
-</td>
-<td style="text-align:right;">
-0.0000000
-</td>
+<tr class="odd">
+<td align="left">Quarter: quarter3</td>
+<td align="right">0.2381571</td>
+<td align="right">0.0000000</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-Quarter: quarter4
-</td>
-<td style="text-align:right;">
-0.1833036
-</td>
-<td style="text-align:right;">
-0.0000000
-</td>
+<tr class="even">
+<td align="left">Quarter: quarter4</td>
+<td align="right">0.1833036</td>
+<td align="right">0.0000000</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-Region:GreatLakes
-</td>
-<td style="text-align:right;">
--0.0505655
-</td>
-<td style="text-align:right;">
-0.2268371
-</td>
+<tr class="odd">
+<td align="left">Region:GreatLakes</td>
+<td align="right">-0.0505655</td>
+<td align="right">0.2268371</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-Region:Midsouth
-</td>
-<td style="text-align:right;">
-0.0146154
-</td>
-<td style="text-align:right;">
-0.7263595
-</td>
+<tr class="even">
+<td align="left">Region:Midsouth</td>
+<td align="right">0.0146154</td>
+<td align="right">0.7263595</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-Region:Northeast
-</td>
-<td style="text-align:right;">
-0.2192285
-</td>
-<td style="text-align:right;">
-0.0000004
-</td>
+<tr class="odd">
+<td align="left">Region:Northeast</td>
+<td align="right">0.2192285</td>
+<td align="right">0.0000004</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-Region:Plains
-</td>
-<td style="text-align:right;">
-0.0486241
-</td>
-<td style="text-align:right;">
-0.2451037
-</td>
+<tr class="even">
+<td align="left">Region:Plains</td>
+<td align="right">0.0486241</td>
+<td align="right">0.2451037</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-Region:SouthCentral
-</td>
-<td style="text-align:right;">
--0.2931731
-</td>
-<td style="text-align:right;">
-0.0000000
-</td>
+<tr class="odd">
+<td align="left">Region:SouthCentral</td>
+<td align="right">-0.2931731</td>
+<td align="right">0.0000000</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-Region:Southeast
-</td>
-<td style="text-align:right;">
-0.0116896
-</td>
-<td style="text-align:right;">
-0.7795317
-</td>
+<tr class="even">
+<td align="left">Region:Southeast</td>
+<td align="right">0.0116896</td>
+<td align="right">0.7795317</td>
 </tr>
-<tr>
-<td style="text-align:left;">
-Region:West
-</td>
-<td style="text-align:right;">
--0.1240774
-</td>
-<td style="text-align:right;">
-0.0033267
-</td>
+<tr class="odd">
+<td align="left">Region:West</td>
+<td align="right">-0.1240774</td>
+<td align="right">0.0033267</td>
 </tr>
 </tbody>
 </table>
@@ -602,14 +491,45 @@ Region:West
 </div>
 <div id="regression-diagnostics" class="section level2">
 <h2>Regression diagnostics</h2>
-<p>To check whether our model meets the assumptions of the analysis, regression diagnostic plots are created:</p>
-<pre class="r"><code>par(mfrow=c(2,2))
-plot(reg1)</code></pre>
-<p><img src="regression_files/figure-html/unnamed-chunk-5-1.png" width="80%" style="display: block; margin: auto;" /> In the Residuals vs Fitted plot, the red line showing the average value of the residuals at each value of fitted value is pretty flat, and points appear to be randomly spread out about the line, indicating no discerninle non-linear trends or changes in variability. The normal QQ plot is also good where the residuals match to the diagonal line, indicating these residuals look to be normally distributed. In the leverage plot, there is no evidence of outliers due to the abscence of Cook’ distance dashed line. Generally, the assumptions are all satisfied and our model is valid.</p>
+<p>To check whether our model meets the assumptions of the analysis, regression diagnostic plots are created: <img src="regression_files/figure-html/unnamed-chunk-5-1.png" width="80%" style="display: block; margin: auto;" /> In the Residuals vs Fitted plot, the red line showing the average value of the residuals at each value of fitted value is pretty flat, and points appear to be randomly spread out about the line, indicating no discerninle non-linear trends or changes in variability. The normal QQ plot is also good where the residuals match to the diagonal line, indicating these residuals look to be normally distributed. In the leverage plot, there is no evidence of outliers due to the abscence of Cook’ distance dashed line. Generally, the assumptions are all satisfied and our model is valid.</p>
 </div>
-<div id="model-comparison" class="section level2">
-<h2>Model comparison</h2>
-<p>We want to add GDP as another predictor in our model and compare with the previous model. Our new model is: <span class="math display">\[ quarterly \space average \space price = \beta_0 + \beta_1type + \beta_2year + \beta_3quarter + \beta_4 region +\beta_5 gdp\]</span></p>
+<div id="how-about-gdp-per-capita-as-another-predictor" class="section level2">
+<h2>How about GDP per capita as another predictor?</h2>
+<p>We want to test whether GDP per capita would influence the response of the average price of avocado. Since we only have the annually GDP by the 8 regions of the U.S., we decide to consider annually average price of a avocado as the outcome and remove quarter variable from the previous model. Our new null model is: <span class="math display">\[ annually \space average \space price = \beta_0 + \beta_1type + \beta_2year + \beta_3 region \]</span></p>
+<p>The alternative model with additional GDP per capita variable is : <span class="math display">\[ annually \space average \space price = \beta_0 + \beta_1type + \beta_2year + \beta_3 region +\beta_4 gdp \space per \space capita \]</span></p>
+<p>The partial F-test for nested models is performed through ANOVA to compare the small and large models. In addition, cross validation is visualized to show the value of root-mean-squared error (RMSE). The results are shown below:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="right">Res.Df</th>
+<th align="right">RSS</th>
+<th align="right">Df</th>
+<th align="right">Sum of Sq</th>
+<th align="right">F</th>
+<th align="right">Pr(&gt;F)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">38</td>
+<td align="right">0.3570618</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="right">37</td>
+<td align="right">0.3292426</td>
+<td align="right">1</td>
+<td align="right">0.0278192</td>
+<td align="right">3.126302</td>
+<td align="right">0.0852837</td>
+</tr>
+</tbody>
+</table>
+<p><img src="regression_files/figure-html/unnamed-chunk-8-1.png" width="80%" style="display: block; margin: auto;" /></p>
+<p>Although the p-value of 0.085 is small, it is higher than 0.05. Hence, with a significance level of 0.05, We fail to reject the small model without the GDP per capita predictor. Given type, year, region predictors in the model, the partial R<sup>2</sup> of the GDP per capita predictor is 0.08, which means the marginal contribution of GDP per capita to the variation in the annually average price of a avocado is only 8%. Based on the cross validation, the prediction error distributions of the two models are similar. Hence, we conclude that GDP per capita is not a significant predictor of the annually average price of a avocado. Future study of the price of avocado should be better consider the other potential predictors.</p>
 </div>
 </div>
 
@@ -648,11 +568,6 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
-<script>
-$(document).ready(function () {
-  window.initializeCodeFolding("hide" === "show");
-});
-</script>
 
 <script>
 $(document).ready(function ()  {

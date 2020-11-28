@@ -289,9 +289,10 @@ volume_region_size_plt =
 ggplotly(volume_region_size_plt)
 ```
 
-By adding gdp data to the avocado dataset...
+## By adding gdp data {.tabset}
 
-```{r gdp_volume_price}
+### Conventional
+```{r gdp_conv}
 pri_gdp_plt = 
   avo_gdp %>% filter(type == "conventional") %>% 
   group_by(region, year) %>% 
@@ -323,3 +324,35 @@ vol_gdp_plt =
 ggplotly(vol_gdp_plt)  
 ```
 
+### Organic 
+```{r gdp_org}
+pri_gdp_plt_org = 
+  avo_gdp %>% filter(type == "organic") %>% 
+  group_by(region, year) %>% 
+  mutate(region = fct_reorder(region, total_gdp)) %>% 
+  rename(GDP = total_gdp, Price = avgp_year, Region = region) %>% 
+  ggplot(aes(x = GDP, y = Price))+
+  geom_point(aes(size = GDP, color = Region), alpha = 0.5) +
+  facet_wrap(~year)+
+  geom_smooth(se = F,color = org_color)+
+  theme_minimal()+
+  theme(axis.text.x=element_text(angle=40,size = 5)) +  
+  labs(title="Region GDP vs. Avocado Price", x="GDP of the Year", y="Average Price", color = "Region")
+
+ggplotly(pri_gdp_plt_org)  
+
+vol_gdp_plt_org =  
+  avo_gdp %>% filter(type == "organic") %>% 
+  group_by(region, year) %>% 
+  mutate(region = fct_reorder(region, total_gdp)) %>% 
+  rename(GDP = total_gdp, Volume = sum_volume, Region = region) %>% 
+  ggplot(aes(x = GDP, y = Volume))+
+  geom_point(aes(size = GDP, color = Region), alpha = 0.5) +
+  facet_wrap(~year)+
+  geom_smooth(se = F,color = org_color)+
+  theme_minimal()+
+  theme(axis.text.x=element_text(angle=40,size = 5), axis.text.y=element_text(angle=90,size = 8)) +  
+  labs(title="Region GDP vs. Avocado Consumption", x="GDP of the Year", y="Year Consumption", color = "Region")
+
+ggplotly(vol_gdp_plt_org)  
+```

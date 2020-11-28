@@ -35,7 +35,8 @@ library(kableExtra)
 knitr::opts_chunk$set(
   warning = FALSE,
   message = FALSE,
-  echo = F
+  echo = F,
+  fig.height = 4, fig.align = "center"
 )
 
 conv_color = "#F17C67"

@@ -477,25 +477,58 @@ ggplotly(volume_region_size_plt)
 By adding gdp data to the avocado dataset...
 
 ```{r gdp_volume_price}
+gdp_conv_p = 
 avo_gdp %>% filter(type == "conventional") %>% 
   group_by(region, year) %>% 
   mutate(region = fct_reorder(region, total_gdp)) %>% 
   ggplot(aes(x = total_gdp, y = avgp_year))+
   geom_point(aes(size = total_gdp, color = region), alpha = 0.5) +
   facet_wrap(~year)+
-  geom_smooth(se = F,color = conv_color)+
+  geom_smooth(se = F,color = conv_color, linetype = "dotted")+
   theme_minimal()+
-  theme(axis.text.x=element_text(angle=90,size = 8))
+  theme(axis.text.x=element_text(angle=90,size = 8)) +  
+  labs(title="Average Conventional Avocado Price vs. total GDP", x="GDP", y="Average Price")
   
-  
+
+gdp_conv_v = 
 avo_gdp %>% filter(type == "conventional") %>% 
   group_by(region, year) %>% 
   mutate(region = fct_reorder(region, total_gdp)) %>% 
   ggplot(aes(x = total_gdp, y = sum_volume))+
   geom_point(aes(size = sum_volume, color = region), alpha = 0.5) +
   facet_wrap(~year)+
-  geom_smooth(se = F,color = conv_color)+
+  geom_smooth(se = F,color = conv_color, linetype = "dotted")+
   theme_minimal()+
-  theme(axis.text.x=element_text(angle=90,size = 8))
+  theme(axis.text.x=element_text(angle=90,size = 8)) +  
+  labs(title="Year Conventional Avocado Consumption vs. total GDP", x="GDP", y="Volume")
+
+gdp_org_p = 
+avo_gdp %>% filter(type == "organic") %>% 
+  group_by(region, year) %>% 
+  mutate(region = fct_reorder(region, total_gdp)) %>% 
+  ggplot(aes(x = total_gdp, y = avgp_year))+
+  geom_point(aes(size = total_gdp, color = region), alpha = 0.5) +
+  facet_wrap(~year)+
+  geom_smooth(se = F,color = conv_color, linetype = "dotted")+
+  theme_minimal()+
+  theme(axis.text.x=element_text(angle=90,size = 8)) +  
+  labs(title="Average Organic Avocado Price vs. total GDP", x="GDP", y="Average Price")
+  
+
+gdp_org_v = 
+avo_gdp %>% filter(type == "conventional") %>% 
+  group_by(region, year) %>% 
+  mutate(region = fct_reorder(region, total_gdp)) %>% 
+  ggplot(aes(x = total_gdp, y = sum_volume))+
+  geom_point(aes(size = sum_volume, color = region), alpha = 0.5) +
+  facet_wrap(~year)+
+  geom_smooth(se = F,color = conv_color, linetype = "dotted" )+
+  theme_minimal()+
+  theme(axis.text.x=element_text(angle=90,size = 8)) +  
+  labs(title="Year Organic Avocado Consumption vs. total GDP", x="GDP", y="Volume")
+
+plot_grid(gdp_conv_p,gdp_org_p,gdp_conv_v,gdp_org_v,nrow = 2,ncol = 2)
 ```
-test again
+
+
+

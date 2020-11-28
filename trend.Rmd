@@ -32,17 +32,22 @@ library(corrplot)
 library(leaps)
 library(kableExtra)
 library(RColorBrewer)
+
 knitr::opts_chunk$set(
   warning = FALSE,
   message = FALSE,
   echo = FALSE,
-  fig.height = 4.5, fig.align = "center"
+  fig.height = 4.5, 
+  fig.align = "center"
   )
-  theme_set(theme_bw() + 
-          theme(legend.position = "bottom",
-                legend.title = element_blank(),
-                plot.title = element_text(hjust = 0.5, size = 15),
-                plot.subtitle = element_text(hjust = 0.5, size = 12)))
+  theme_set(
+    theme_bw() + 
+    theme(
+      legend.position = "bottom",
+      legend.title = element_blank(),
+      plot.title = element_text(hjust = 0.5, size = 15),
+      plot.subtitle = element_text(hjust = 0.5, size = 12))
+    )
 
 avo_df = 
   read_csv("data/avocado.csv") %>% 
@@ -64,18 +69,14 @@ avo_gdp = read_csv("data/avo_gdp.csv")
 
 conv_color = "#F17C67"
 org_color = "#7BA23F"
-
-#install.packages('gifski')
-#install.packages('png')
 ```
 
 ## Organic vs. Conventional 
 Organic fruit has earned itself a place with people being more and more concerned about life quality. Compared with conventionally farm products, organically grown avocado has lower detectable levels of pesticide residue. Yet, the price is higher as well.
 
 ```{r}
-# Sort the dates
+# sort the dates
 avo_df <- avo_df[order(as.Date(avo_df$date, format="%Y-%m-%d")),]
-
 
 price_trend <- 
   avo_df %>% 
@@ -149,8 +150,6 @@ conv_pat_yearly =
   theme(plot.title=element_text(hjust=0.5), axis.text.x = element_text(angle = 90)) + 
   labs(title="Seasonal Fluctuations \n Convenctional Avocados", x="Month", y="Average Price") 
 
-
-
 org_pat_yearly =
   seasonal_df %>% 
   select(year, monthabb, average_price, type) %>% 
@@ -165,7 +164,6 @@ org_pat_yearly =
   theme(plot.title=element_text(hjust=0.5), axis.text.x = element_text(angle = 90)) +
   labs(title="Organic Avocados", x="Month", y="Average Price") 
 
-
 plot_grid(conv_pat_yearly, org_pat_yearly, nrow=2)
 ```
 
@@ -176,7 +174,6 @@ By visualizing both Price vs. Time and Volume vs. Time, we noticed that the volu
 
 organic <- avo_df %>% select(date, average_price, type, total_volume) %>% filter(type == "organic")
 conventional <- avo_df %>% select(date, average_price, type, total_volume) %>% filter(type == "conventional")
-
 
 organic <- as_tbl_time(organic, index=date)
 organic <- as_period(organic, '1 month')
@@ -214,7 +211,6 @@ organic_monthly <-
   geom_hline(yintercept=min(organic$average_price), linetype="dashed", color = "blue") +
   theme_minimal() 
 #+ transition_reveal(date)
-
 
 organic_volume <- 
   organic %>%

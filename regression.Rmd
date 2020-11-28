@@ -78,14 +78,14 @@ Based on the trends plot, we find that the average price of a avocado is differe
 ## MLR modeling
 In our designed model, the outcome is
 
-+ quarterly_average_price: the average price of a single avocado within a quarter of a year
++ `quarterly_average_price`: the average price of a single avocado within a quarter of a year
 
 and the predictors considered include:
 
-+ type: conventional or organic avocado\
-+ year: the year of observation\
-+ quarter: the quarter of a year. There are four quarters of a year, quarter 1 stands for Jan, Feb, Mar, quarter 2 stands for Apr, May, Jun, quarter 3 stands for Jul, Aug, Sep, quarter 4 stands for Oct, Nov, Dec\
-+ region: regions of the observation. There are 8 resgions to be considered, including California, West, Plains, South Central, Great Lakes, Northeast, Midsouth, Southeast. These 8 regions compose 48 states of the U.S., except for Alaska and Hawaii.
++ `type`: conventional or organic avocado\
++ `year`: the year of observation\
++ `quarter`: the quarter of a year. There are four quarters of a year, quarter 1 stands for Jan, Feb, Mar, quarter 2 stands for Apr, May, Jun, quarter 3 stands for Jul, Aug, Sep, quarter 4 stands for Oct, Nov, Dec\
++ `region`: regions of the observation. There are 8 resgions to be considered, including California, West, Plains, South Central, Great Lakes, Northeast, Midsouth, Southeast. These 8 regions compose 48 states of the U.S., except for Alaska and Hawaii.
 
 The model we intend to fit is:
 

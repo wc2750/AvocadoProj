@@ -226,6 +226,8 @@ plot_grid(conventional_monthly, organic_monthly,conventional_volume, organic_vol
 
 ## Avocado Price across Year in US by Region
 
+We found that the average price among all regions are growing slightly year by year, but the overall price difference remains unchanged among the eight major regions. 
+
 ```{r}
 pri_reg_plt =
   avo_gdp %>% 
@@ -251,6 +253,8 @@ ggplotly(pri_reg_plt)
 ```
 
 ## Region vs Size
+
+According to the Region vs Size  bar graph, we noticed all eight regions consumed least extra large avocados. Some regions consumed more large over small ones, and some preferred the small over large ones. 
 
 ```{r}
 volume_region_size_plt = 
@@ -286,6 +290,8 @@ ggplotly(volume_region_size_plt)
 ```
 
 ## By adding gdp data {.tabset}
+
+Average GDP? 
 
 ### Conventional
 ```{r gdp_conv}

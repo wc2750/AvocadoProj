@@ -31,11 +31,13 @@ library(transformr)
 library(corrplot)
 library(leaps)
 library(kableExtra)
-
+library(RColorBrewer)
 knitr::opts_chunk$set(
   warning = FALSE,
   message = FALSE,
-  echo = FALSE)
+  echo = FALSE,
+  fig.height = 4.5, fig.align = "center"
+  )
   theme_set(theme_bw() + 
           theme(legend.position = "bottom",
                 legend.title = element_blank(),
@@ -57,6 +59,8 @@ avo_df =
     large = x4225,
     extra_large = x4770,
   ) 
+
+avo_gdp = read_csv("data/avo_gdp.csv")
 
 conv_color = "#F17C67"
 org_color = "#7BA23F"
@@ -80,7 +84,7 @@ price_trend <-
   geom_area(alpha = 0.3, position = position_dodge(0.8)) + 
   theme_minimal() +
   labs(
-    title = "Time vs. Avocado Price by Type",
+    title = "Avocado Price across Time by Type",
     x = "Time",
     y = "Average Price",
     fill = "Type"
@@ -224,54 +228,98 @@ organic_volume <-
 plot_grid(conventional_monthly, organic_monthly,conventional_volume, organic_volume, nrow=2, ncol=2)
 ```
 
-## Avocado Price across Time in US by Region
-```{r}
-time_fig =
-  avo_df %>% 
-  filter(year != 2018) %>% 
-  group_by(year, month, region) %>% 
-  summarise(mean_price = mean(average_price)) %>% 
-  ggplot(aes(x = month, y = mean_price, color = region)) +
-  geom_point(size = 0.5) +
-  geom_smooth(size = 0.3, se = FALSE) + 
-  facet_grid(~year) +
-  labs(
-    title = "Time vs. Avocado Price by Region",
-    x = "Month",
-    y = "Average Price",
-    color = "Region",
-    caption = "https://hassavocadoboard.com/"
-    ) + 
-  scale_x_continuous(
-    breaks = c(seq(1, 12, by = 3)),
-    labels = c(seq(1, 12, by = 3))
-    ) 
-  
+## Avocado Price across Year in US by Region
 
-ggplotly(time_fig) %>% layout(showlegend = FALSE)
+```{r}
+pri_reg_plt =
+  avo_gdp %>% 
+  mutate(year = as.factor(year)) %>% 
+  mutate(
+    region = fct_reorder(region, avgp_year),
+    type = recode(type, "conventional"="Conventional", "organic"="Organic"),
+    avgp_year = signif(avgp_year,2)
+  ) %>% 
+  rename(Year = year, Region = region, Price = avgp_year) %>% 
+  ggplot(aes(x = Year, y = Price)) +
+  geom_bar(stat="identity", position="dodge",alpha = 0.5,aes(fill = Region))+
+  theme_minimal()+
+  labs(title="Avocado Price by Region", 
+       x="Year", 
+       y="Average Price",
+       fill = "Region"
+       )+
+  scale_fill_manual(values=c("#a6cee3","#1f78b4","#b2df8a","#33a02c","#fb9a99","#e31a1c","#fdbf6f","#ff7f00")) +
+  facet_wrap(~type) 
+  
+ggplotly(pri_reg_plt) 
 ```
 
-## Average Year Avocado Consumption in US by Region
-We are interested in the ranking of regions people from which consumed the most amount of avocados.
+## Region vs Size
 
 ```{r}
-avo_df %>% 
-  filter(year != 2018 & region != "TotalUS") %>% 
+volume_region_size_plt = 
+  avo_df %>% 
+  filter(year != 2018 & (region %in%         c("California","West","Plains","SouthCentral","GreatLakes","Midsouth","Southeast","Northeast"))) %>% 
   group_by(region, year) %>%
-  summarise(year_sum = sum(total_volume)) %>% 
+  summarise(year_sum = sum(total_volume),
+            small_sum = sum(small),
+            large_sum = sum(large),
+            extra_sum = sum(extra_large)) %>% 
   ungroup(year) %>% 
-  summarise(region_avg = mean(year_sum)) %>% 
+  summarise(region_avg = mean(year_sum),
+  Small = mean(small_sum),
+  Large = mean(large_sum), 
+  Extra = mean(extra_sum)) %>% 
   mutate(
     region = fct_reorder(region, region_avg) 
   ) %>% 
-  plot_ly(x = ~region, y = ~region_avg, color = ~region, type = "bar") %>%
-  layout(
-    xaxis = list(title = "Region"),
-    yaxis = list(title = "Average Volume Consumption"),
-    title = "Region vs. Average Year Consumption"
-  ) 
+  rename(Region = region) %>% 
+  select(- region_avg) %>% 
+  pivot_longer(
+    Small:Extra,
+    names_to = "Size",
+    values_to = "Volume"
+  ) %>% 
+  ggplot(aes(x =Region, y = Volume, fill = Size)) + 
+  geom_bar(stat="identity", position="dodge",alpha = 0.5)+
+  theme_minimal()+
+  theme(axis.text.x=element_text(angle=45,size = 8)) +  
+  labs(title="Average Yearly Consumption by Size", x="Region", y="Volume Consumption")
+
+ggplotly(volume_region_size_plt)
 ```
 
+By adding gdp data to the avocado dataset...
 
+```{r gdp_volume_price}
+pri_gdp_plt = 
+  avo_gdp %>% filter(type == "conventional") %>% 
+  group_by(region, year) %>% 
+  mutate(region = fct_reorder(region, total_gdp)) %>% 
+  rename(GDP = total_gdp, Price = avgp_year, Region = region) %>% 
+  ggplot(aes(x = GDP, y = Price))+
+  geom_point(aes(size = GDP, color = Region), alpha = 0.5) +
+  facet_wrap(~year)+
+  geom_smooth(se = F,color = conv_color)+
+  theme_minimal()+
+  theme(axis.text.x=element_text(angle=40,size = 5)) +  
+  labs(title="Region GDP vs. Avocado Price", x="GDP of the Year", y="Average Price", color = "Region")
 
+ggplotly(pri_gdp_plt)  
+
+vol_gdp_plt =  
+  avo_gdp %>% filter(type == "conventional") %>% 
+  group_by(region, year) %>% 
+  mutate(region = fct_reorder(region, total_gdp)) %>% 
+  rename(GDP = total_gdp, Volume = sum_volume, Region = region) %>% 
+  ggplot(aes(x = GDP, y = Volume))+
+  geom_point(aes(size = GDP, color = Region), alpha = 0.5) +
+  facet_wrap(~year)+
+  geom_smooth(se = F,color = conv_color)+
+  theme_minimal()+
+  theme(axis.text.x=element_text(angle=40,size = 5), axis.text.y=element_text(angle=90,size = 8)) +  
+  labs(title="Region GDP vs. Avocado Consumption", x="GDP of the Year", y="Year Consumption", color = "Region")
+
+ggplotly(vol_gdp_plt)  
+```
 

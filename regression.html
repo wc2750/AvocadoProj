@@ -393,17 +393,17 @@ div.tocify {
 <h2>MLR modeling</h2>
 <p>In our designed model, the outcome is</p>
 <ul>
-<li>quarterly_average_price: the average price of a single avocado within a quarter of a year</li>
+<li><code>quarterly_average_price</code>: the average price of a single avocado within a quarter of a year</li>
 </ul>
 <p>and the predictors considered include:</p>
 <ul>
-<li>type: conventional or organic avocado<br />
+<li><code>type</code>: conventional or organic avocado<br />
 </li>
-<li>year: the year of observation<br />
+<li><code>year</code>: the year of observation<br />
 </li>
-<li>quarter: the quarter of a year. There are four quarters of a year, quarter 1 stands for Jan, Feb, Mar, quarter 2 stands for Apr, May, Jun, quarter 3 stands for Jul, Aug, Sep, quarter 4 stands for Oct, Nov, Dec<br />
+<li><code>quarter</code>: the quarter of a year. There are four quarters of a year, quarter 1 stands for Jan, Feb, Mar, quarter 2 stands for Apr, May, Jun, quarter 3 stands for Jul, Aug, Sep, quarter 4 stands for Oct, Nov, Dec<br />
 </li>
-<li>region: regions of the observation. There are 8 resgions to be considered, including California, West, Plains, South Central, Great Lakes, Northeast, Midsouth, Southeast. These 8 regions compose 48 states of the U.S., except for Alaska and Hawaii.</li>
+<li><code>region</code>: regions of the observation. There are 8 resgions to be considered, including California, West, Plains, South Central, Great Lakes, Northeast, Midsouth, Southeast. These 8 regions compose 48 states of the U.S., except for Alaska and Hawaii.</li>
 </ul>
 <p>The model we intend to fit is:</p>
 <p><span class="math display">\[ quarterly \space average \space price = \beta_0 + \beta_1type + \beta_2year + \beta_3quarter + \beta_4 region \]</span></p>

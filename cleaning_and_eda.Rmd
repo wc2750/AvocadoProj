@@ -43,24 +43,12 @@ avo_df =
     extra_large = x4770,
   ) 
 
-avo_tidy = 
-  avo_df %>% 
-  pivot_longer(
-    small:extra_large,
-    names_to = "fruit_size",
-    values_to = "quantity_sold"
-  ) %>% 
-  pivot_longer(
-    total_bags:x_large_bags,
-    names_pattern = "(.*)_bags",
-    names_to = "bag_type",
-    values_to = "bag_sold",
-  ) %>% 
-  mutate(
-    bag_type = recode(bag_type, x_large = "extra_large")
-  )
+avo_df %>% head(10)
 
-avo_tidy
+str(avo_df)
+```
+```{r null_avo}
+sum(is.na(avo_df))
 ```
 
 Description: \
@@ -83,7 +71,9 @@ gdp_df =
     values_to = "gdp"
   )
 
-gdp_df
+gdp_df %>% head(10)
+
+sum(is.na(gdp_df))
 ```
 
 Description: \

@@ -1,0 +1,132 @@
+---
+title: "New_EDA"
+date: "11/28/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(ggridges)
+library(patchwork)
+library(plotly)
+library(cowplot)
+
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE,
+  echo = F
+)
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+
+```
+
+```{r read_avo}
+avo_df = 
+  read_csv("data/avocado.csv") %>% 
+  janitor::clean_names() %>% 
+  select(-1) %>% 
+  separate(date, c("year", "month", "day"), remove = FALSE) %>% 
+  mutate(
+    year = as.integer(year),
+    month = as.integer(month),
+    day = as.integer(day)
+  ) %>% 
+  rename(
+    small = x4046,
+    large = x4225,
+    extra_large = x4770,
+  ) 
+
+
+gdp_df = read_csv("data/gdp-by-state.csv") %>% select(-1)
+```
+
+take a a look to the avocado dataset.
+
+```{r look_avocado}
+avo_df %>% head()
+
+sum(is.na(avo_df))
+
+```
+
+take a look into the gdp dataset
+```{r look_gdp}
+gdp_df %>% head()
+
+sum(is.na(gdp_df))
+```
+
+
+# Avocado dataset
+
+```{r price_dist}
+price_dist = 
+avo_df %>% 
+  ggplot(aes(x = average_price))
+price_dist+ geom_histogram(aes(fill = type),alpha = 0.3,binwidth = 0.1)+
+  labs(
+    title = "United States Avocado Price Distribution (2015-2018)",
+    x = "Average Price",
+    y = "Count",
+    fill = "Type"
+    ) 
+price_dist+ geom_density(aes(color = type),alpha = 0.3)+
+  labs(
+    title = "United States Avocado Price Distribution (2015-2018)",
+    x = "Average Price",
+    y = "Density",
+    color = "Type"
+    ) 
+```
+
+
+
+# GDP dataset
+```{r gdp_dist}
+gdp_dist = 
+  gdp_df %>% 
+  pivot_longer(
+    "2013":"2017",
+    names_to = "year",
+    values_to = "gdp"
+  )
+
+gdp_hist =
+  gdp_dist %>% 
+    filter(Area != "United States") %>% 
+  ggplot(aes(x = gdp))+
+  geom_histogram(aes(fill = year), alpha = .5, binwidth = 2500)+
+  labs(
+    title = "United States GDP Distribution (2013-2017)",
+    x = "GDP",
+    y = "Count",
+    fill = "Year"
+    ) 
+
+gdp_ranks = 
+  gdp_dist %>% 
+  filter(Area != "United States") %>% 
+  mutate(
+    Area = fct_reorder(Area, gdp)
+  ) %>% 
+  ggplot(aes(x = gdp, y = Area, fill = Area))+
+  geom_bar(position = "dodge", stat = "identity")+
+  theme(legend.position = "none")+
+  labs(
+    title = "United States GDP Ranking (2013-2017)",
+    x = "GDP",
+    y = "Area"
+    ) +
+  facet_grid(~year)
+
+gdp_hist
+
+gdp_ranks
+```
+

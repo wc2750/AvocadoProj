@@ -1,7 +1,10 @@
 ---
-title: "New_EDA"
-date: "11/28/2020"
-output: html_document
+title: "EDA"
+output:   
+  html_document:
+    toc: true
+    toc_float: true
+fontsize: 12pt
 ---
 
 ```{r setup, include=FALSE}
@@ -10,19 +13,14 @@ library(ggridges)
 library(patchwork)
 library(plotly)
 library(cowplot)
+library(RColorBrewer)
 
 knitr::opts_chunk$set(
   warning = FALSE,
   message = FALSE,
-  echo = F
+  echo = F,
+  fig.height = 5
 )
-
-options(
-  ggplot2.continuous.colour = "viridis",
-  ggplot2.continuous.fill = "viridis"
-)
-
-
 ```
 
 ```{r read_avo}
@@ -46,37 +44,41 @@ avo_df =
 gdp_df = read_csv("data/gdp-by-state.csv") %>% select(-1)
 ```
 
-take a a look to the avocado dataset.
+Preview the cleaned avocado dataset.
 
 ```{r look_avocado}
-avo_df %>% head()
+avo_df %>% head() %>% knitr::kable()
 
-sum(is.na(avo_df))
+#sum(is.na(avo_df))
 
 ```
 
-take a look into the gdp dataset
+Preview the gdp dataset.
 ```{r look_gdp}
-gdp_df %>% head()
+gdp_df %>% head() %>% knitr::kable()
 
-sum(is.na(gdp_df))
+#sum(is.na(gdp_df))
 ```
 
 
 # Avocado dataset
 
-```{r price_dist}
+```{r price_dist, include=FALSE}
 price_dist = 
 avo_df %>% 
   ggplot(aes(x = average_price))
-price_dist+ geom_histogram(aes(fill = type),alpha = 0.3,binwidth = 0.1)+
+
+price_dist + 
+  geom_histogram(aes(fill = type), alpha = 0.3,binwidth = 0.1) +
   labs(
     title = "United States Avocado Price Distribution (2015-2018)",
     x = "Average Price",
     y = "Count",
     fill = "Type"
     ) 
-price_dist+ geom_density(aes(color = type),alpha = 0.3)+
+
+price_dist + 
+  geom_density(aes(color = type),alpha = 0.3) +
   labs(
     title = "United States Avocado Price Distribution (2015-2018)",
     x = "Average Price",
@@ -85,9 +87,32 @@ price_dist+ geom_density(aes(color = type),alpha = 0.3)+
     ) 
 ```
 
+Checking the Distribution of the avocado price, we found that the prices of the two types of avocado, conventional and organic, are generally normally distributed, with organic avocado prices being much higher. 
+```{r}
+conv_color = "#F08080"
+org_color = "#BDB76B"
+
+  avo_df %>% 
+  mutate(type = recode(type, "conventional"="Conventional", "organic"="Organic")) %>% 
+  ggplot(aes(x = average_price, y = ..density.., fill = type, color = type)) +
+  geom_histogram(alpha = 0.4, binwidth = 0.1) +
+  geom_density(alpha = 0.3) +
+  labs(
+    title = "United States Avocado Price Distribution (2015-2018)",
+    x = "Average Price",
+    y = "Density",
+    fill = "Type"
+    ) +
+  guides(color = FALSE) + scale_fill_manual(values=c(conv_color, org_color)) + scale_color_manual(values=c(conv_color, org_color))
+
+
+```
+
 
 
 # GDP dataset
+
+Preview the GDP distribution.
 ```{r gdp_dist}
 gdp_dist = 
   gdp_df %>% 
@@ -97,36 +122,37 @@ gdp_dist =
     values_to = "gdp"
   )
 
-gdp_hist =
-  gdp_dist %>% 
-    filter(Area != "United States") %>% 
+
+gdp_dist %>% 
+  filter(Area != "United States") %>% 
   ggplot(aes(x = gdp))+
-  geom_histogram(aes(fill = year), alpha = .5, binwidth = 2500)+
+  geom_histogram(aes(fill = year), alpha = .4, binwidth = 3000)+
   labs(
     title = "United States GDP Distribution (2013-2017)",
     x = "GDP",
-    y = "Count",
+    y = "Density",
     fill = "Year"
     ) 
+#+ scale_fill_brewer(palette = "Paired")
+```
 
-gdp_ranks = 
-  gdp_dist %>% 
+```{r}
+gdp_dist %>% 
   filter(Area != "United States") %>% 
   mutate(
     Area = fct_reorder(Area, gdp)
   ) %>% 
   ggplot(aes(x = gdp, y = Area, fill = Area))+
-  geom_bar(position = "dodge", stat = "identity")+
+  geom_bar(position = "dodge", stat = "identity", alpha=.5)+
   theme(legend.position = "none")+
   labs(
     title = "United States GDP Ranking (2013-2017)",
     x = "GDP",
     y = "Area"
     ) +
-  facet_grid(~year)
-
-gdp_hist
-
-gdp_ranks
+  facet_grid(~year)+
+  theme(plot.title=element_text(hjust=0.5), axis.text.x = element_text(angle = 45)) +
+  theme(axis.text.y = element_text(size = 5)) 
 ```
+
 

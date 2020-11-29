@@ -3,6 +3,8 @@ output_dir: "."
 navbar:
   title: "Home"
   right:
+    - text: "EDA"
+      href: new_EDA.html
     - text: "Trend Graphs"
       href: trend.html
     - text: "Regression Analysis"

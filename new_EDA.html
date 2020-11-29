@@ -10,9 +10,8 @@
 
 
 
-<meta name="date" content="2020-11-28" />
 
-<title>New_EDA</title>
+<title>EDA</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -20,20 +19,14 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
-
-<style type="text/css">
-  code{white-space: pre-wrap;}
-  span.smallcaps{font-variant: small-caps;}
-  span.underline{text-decoration: underline;}
-  div.column{display: inline-block; vertical-align: top; width: 50%;}
-  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-  ul.task-list{list-style: none;}
-      </style>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -260,6 +253,69 @@ $(document).ready(function () {
 
 
 
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
 
 </head>
 
@@ -267,6 +323,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -287,6 +353,9 @@ $(document).ready(function () {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
+  <a href="new_EDA.html">EDA</a>
+</li>
+<li>
   <a href="trend.html">Trend Graphs</a>
 </li>
 <li>
@@ -313,48 +382,231 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">New_EDA</h1>
-<h4 class="date">11/28/2020</h4>
+<h1 class="title toc-ignore">EDA</h1>
 
 </div>
 
 
-<p>take a a look to the avocado dataset.</p>
-<pre><code>## # A tibble: 6 x 15
-##   date        year month   day average_price total_volume small  large
-##   &lt;date&gt;     &lt;int&gt; &lt;int&gt; &lt;int&gt;         &lt;dbl&gt;        &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
-## 1 2015-12-27  2015    12    27          1.33       64237. 1037. 5.45e4
-## 2 2015-12-20  2015    12    20          1.35       54877.  674. 4.46e4
-## 3 2015-12-13  2015    12    13          0.93      118220.  795. 1.09e5
-## 4 2015-12-06  2015    12     6          1.08       78992. 1132  7.20e4
-## 5 2015-11-29  2015    11    29          1.28       51040.  941. 4.38e4
-## 6 2015-11-22  2015    11    22          1.26       55980. 1184. 4.81e4
-## # ... with 7 more variables: extra_large &lt;dbl&gt;, total_bags &lt;dbl&gt;,
-## #   small_bags &lt;dbl&gt;, large_bags &lt;dbl&gt;, x_large_bags &lt;dbl&gt;, type &lt;chr&gt;,
-## #   region &lt;chr&gt;</code></pre>
-<pre><code>## [1] 0</code></pre>
-<p>take a look into the gdp dataset</p>
-<pre><code>## # A tibble: 6 x 6
-##   Area          `2013` `2014` `2015` `2016` `2017`
-##   &lt;chr&gt;          &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
-## 1 United States  48534  49329  50301  50660  51337
-## 2 Alabama        36674  36473  36818  37158  37508
-## 3 Alaska         69711  67179  65971  63304  63610
-## 4 Arizona        38352  38534  38787  38940  39583
-## 5 Arkansas       35888  36265  36295  36502  36714
-## 6 California     53838  55571  57637  58974  60359</code></pre>
-<pre><code>## [1] 0</code></pre>
+<p>Preview the cleaned avocado dataset.</p>
+<table>
+<colgroup>
+<col width="7%" />
+<col width="3%" />
+<col width="4%" />
+<col width="2%" />
+<col width="9%" />
+<col width="8%" />
+<col width="5%" />
+<col width="6%" />
+<col width="8%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="8%" />
+<col width="8%" />
+<col width="4%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">date</th>
+<th align="right">year</th>
+<th align="right">month</th>
+<th align="right">day</th>
+<th align="right">average_price</th>
+<th align="right">total_volume</th>
+<th align="right">small</th>
+<th align="right">large</th>
+<th align="right">extra_large</th>
+<th align="right">total_bags</th>
+<th align="right">small_bags</th>
+<th align="right">large_bags</th>
+<th align="right">x_large_bags</th>
+<th align="left">type</th>
+<th align="left">region</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2015-12-27</td>
+<td align="right">2015</td>
+<td align="right">12</td>
+<td align="right">27</td>
+<td align="right">1.33</td>
+<td align="right">64236.62</td>
+<td align="right">1036.74</td>
+<td align="right">54454.85</td>
+<td align="right">48.16</td>
+<td align="right">8696.87</td>
+<td align="right">8603.62</td>
+<td align="right">93.25</td>
+<td align="right">0</td>
+<td align="left">conventional</td>
+<td align="left">Albany</td>
+</tr>
+<tr class="even">
+<td align="left">2015-12-20</td>
+<td align="right">2015</td>
+<td align="right">12</td>
+<td align="right">20</td>
+<td align="right">1.35</td>
+<td align="right">54876.98</td>
+<td align="right">674.28</td>
+<td align="right">44638.81</td>
+<td align="right">58.33</td>
+<td align="right">9505.56</td>
+<td align="right">9408.07</td>
+<td align="right">97.49</td>
+<td align="right">0</td>
+<td align="left">conventional</td>
+<td align="left">Albany</td>
+</tr>
+<tr class="odd">
+<td align="left">2015-12-13</td>
+<td align="right">2015</td>
+<td align="right">12</td>
+<td align="right">13</td>
+<td align="right">0.93</td>
+<td align="right">118220.22</td>
+<td align="right">794.70</td>
+<td align="right">109149.67</td>
+<td align="right">130.50</td>
+<td align="right">8145.35</td>
+<td align="right">8042.21</td>
+<td align="right">103.14</td>
+<td align="right">0</td>
+<td align="left">conventional</td>
+<td align="left">Albany</td>
+</tr>
+<tr class="even">
+<td align="left">2015-12-06</td>
+<td align="right">2015</td>
+<td align="right">12</td>
+<td align="right">6</td>
+<td align="right">1.08</td>
+<td align="right">78992.15</td>
+<td align="right">1132.00</td>
+<td align="right">71976.41</td>
+<td align="right">72.58</td>
+<td align="right">5811.16</td>
+<td align="right">5677.40</td>
+<td align="right">133.76</td>
+<td align="right">0</td>
+<td align="left">conventional</td>
+<td align="left">Albany</td>
+</tr>
+<tr class="odd">
+<td align="left">2015-11-29</td>
+<td align="right">2015</td>
+<td align="right">11</td>
+<td align="right">29</td>
+<td align="right">1.28</td>
+<td align="right">51039.60</td>
+<td align="right">941.48</td>
+<td align="right">43838.39</td>
+<td align="right">75.78</td>
+<td align="right">6183.95</td>
+<td align="right">5986.26</td>
+<td align="right">197.69</td>
+<td align="right">0</td>
+<td align="left">conventional</td>
+<td align="left">Albany</td>
+</tr>
+<tr class="even">
+<td align="left">2015-11-22</td>
+<td align="right">2015</td>
+<td align="right">11</td>
+<td align="right">22</td>
+<td align="right">1.26</td>
+<td align="right">55979.78</td>
+<td align="right">1184.27</td>
+<td align="right">48067.99</td>
+<td align="right">43.61</td>
+<td align="right">6683.91</td>
+<td align="right">6556.47</td>
+<td align="right">127.44</td>
+<td align="right">0</td>
+<td align="left">conventional</td>
+<td align="left">Albany</td>
+</tr>
+</tbody>
+</table>
+<p>Preview the gdp dataset.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Area</th>
+<th align="right">2013</th>
+<th align="right">2014</th>
+<th align="right">2015</th>
+<th align="right">2016</th>
+<th align="right">2017</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">United States</td>
+<td align="right">48534</td>
+<td align="right">49329</td>
+<td align="right">50301</td>
+<td align="right">50660</td>
+<td align="right">51337</td>
+</tr>
+<tr class="even">
+<td align="left">Alabama</td>
+<td align="right">36674</td>
+<td align="right">36473</td>
+<td align="right">36818</td>
+<td align="right">37158</td>
+<td align="right">37508</td>
+</tr>
+<tr class="odd">
+<td align="left">Alaska</td>
+<td align="right">69711</td>
+<td align="right">67179</td>
+<td align="right">65971</td>
+<td align="right">63304</td>
+<td align="right">63610</td>
+</tr>
+<tr class="even">
+<td align="left">Arizona</td>
+<td align="right">38352</td>
+<td align="right">38534</td>
+<td align="right">38787</td>
+<td align="right">38940</td>
+<td align="right">39583</td>
+</tr>
+<tr class="odd">
+<td align="left">Arkansas</td>
+<td align="right">35888</td>
+<td align="right">36265</td>
+<td align="right">36295</td>
+<td align="right">36502</td>
+<td align="right">36714</td>
+</tr>
+<tr class="even">
+<td align="left">California</td>
+<td align="right">53838</td>
+<td align="right">55571</td>
+<td align="right">57637</td>
+<td align="right">58974</td>
+<td align="right">60359</td>
+</tr>
+</tbody>
+</table>
 <div id="avocado-dataset" class="section level1">
 <h1>Avocado dataset</h1>
-<p><img src="new_EDA_files/figure-html/price_dist-1.png" width="672" /><img src="new_EDA_files/figure-html/price_dist-2.png" width="672" /></p>
+<p>Checking the Distribution of the avocado price, we found that the prices of the two types of avocado, conventional and organic, are generally normally distributed, with organic avocado prices being much higher. <img src="new_EDA_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
 </div>
 <div id="gdp-dataset" class="section level1">
 <h1>GDP dataset</h1>
-<p><img src="new_EDA_files/figure-html/gdp_dist-1.png" width="672" /><img src="new_EDA_files/figure-html/gdp_dist-2.png" width="672" /></p>
+<p>Preview the GDP distribution. <img src="new_EDA_files/figure-html/gdp_dist-1.png" width="672" /></p>
+<p><img src="new_EDA_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
 </div>
 
 
 
+</div>
+</div>
 
 </div>
 
@@ -387,6 +639,32 @@ $(document).ready(function () {
 
 <!-- code folding -->
 
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>

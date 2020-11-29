@@ -9,22 +9,29 @@ output:
 ---
 
 ## Motivation
+Avocado has become a more preferable and healthy choice as a source of fat nutrition source. According to USDA, U.S. demand for avocados has increased steadily over the past two decades. Per capita consumption of avocados has tripled since 2001 to 8 pounds per person in 2018. We believe that by looking into influential factors and trends regarding avocado prices, we could gain more insights into its consumption pattern and further predict its impact on people’s life and health.
 
 ## Questions
 
-## Data
+* What is the trend of avocado price and consumption in US over the year based on different type?
+* Does the avocado price and consumption vary depending on geographical regions?
+* Which size of avocado people love the most?
+* Does GDP, which is an important indicator of people's consumption level, has any effct on the avocado price and consumption? 
 
-**Source Data**
+We want to perform EDA to the original data, visualize any interesting trend and implement a prediction model of prices. The impact of GDP on local price and consumption of avocado will also be assessed. We also intend to include interactive visualization tool that will enable people to check on time-base or region-base information purposefully, and compare between any region of interest
 
-**Data Cleaning**
+## Data  Description
+* `Avocado price data`: [Kaggle](https://www.kaggle.com/neuromusic/avocado-prices) 
+* `State GDP data`: [Kaggle](https://www.kaggle.com/solorzano/gdp-per-capita-in-us-states?select=bea-gdp-by-state.csv)
 
-**Outcome of interest**
+We employed an avocado data set here compiled by Justin Kiggins who obtained the data source from [Hass Avocado Board](https://hassavocadoboard.com/). Important variables includes date, average price, total volume, volume consumption by avocado size, type and region. The dates ranges from 2015-2018, the avocado size includes small, large and extra large and the type includes conventional and organic. 
 
-**Candidate Predictor**
-
+The GDP data set consists US GDP data by states for each year from 2013-2017.
 
 ## Exploratory Data Analysis 
+By plotting the avocado price over time for each type of avocado, we noticed that the organic avocado has a higher price than conventional avocado over all time. In the pie plot of consumption by type, it is obvious that the conventional avocado takes over the market, but the share of organic avocado was increasing slightly year by year. We also found that, the fluctuation of avocado prices was getting greater year by year from the plot of the avocado price over each year. A shared pattern could be observed that the prices always peaks around the third quarter of the year. By visualizing both Price vs. Time and Volume vs. Time, we noticed that the volume peak is a signal for an upcoming drop in avocado prices. By visualizing avocado price across year in US by region, we found that the average prices among all regions are growing slightly year by year, but the overall price difference remains unchanged among the eight major regions. According to the Region vs. Size bar graph, we noticed all eight regions consumed extra large avocados the least. Some regions consumed more large over small ones, but some preferred the small over large ones, which is an interesting finding.
 
+We calculated Gdp Per Capita for each region and plotted it against the average price. We found no apparent trend between these two variables. For example, California has the highest GDP per capita, but its average price is around the middle among eight regions. As for the Region GDP Per Capita vs. Avocado Consumption graph, similarly, we found no apparent trend here as well. Further inferences on GDP Per Capita are made in the regression analysis section.
 
 ## Formal Analysis
 

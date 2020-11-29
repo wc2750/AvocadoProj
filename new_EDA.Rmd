@@ -49,7 +49,7 @@ Preview the cleaned avocado dataset.
 
 
 ```{r look_avocado}
-avo_df %>% head() %>% knitr::kable()
+avo_df %>% select(-date, -total_bags, -small_bags, -large_bags, -x_large_bags) %>% head() %>% knitr::kable()
 
 #sum(is.na(avo_df))
 

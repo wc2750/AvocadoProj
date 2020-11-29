@@ -19,9 +19,10 @@ knitr::opts_chunk$set(
   warning = FALSE,
   message = FALSE,
   echo = F,
-  fig.height = 5
+  fig.width = 8
 )
 ```
+
 
 ```{r read_avo}
 avo_df = 
@@ -40,11 +41,12 @@ avo_df =
     extra_large = x4770,
   ) 
 
-
 gdp_df = read_csv("data/gdp-by-state.csv") %>% select(-1)
 ```
 
+
 Preview the cleaned avocado dataset.
+
 
 ```{r look_avocado}
 avo_df %>% head() %>% knitr::kable()
@@ -52,6 +54,7 @@ avo_df %>% head() %>% knitr::kable()
 #sum(is.na(avo_df))
 
 ```
+
 
 Preview the gdp dataset.
 ```{r look_gdp}

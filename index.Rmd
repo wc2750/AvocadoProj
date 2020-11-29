@@ -10,7 +10,7 @@ output:
 
 <center>
 
-![](image\homepaage.png){width=500px}
+![](image\avocado_bg.jpg){width=950px}
 </center>
 
 <br>
@@ -29,17 +29,17 @@ We want to perform EDA to the original data and implement a prediction model of 
 * `State GDP data`: 
   + The dataset including the annually GDP by the states of the U.S. between 2013 and 2017 can be accessed [here](https://www.kaggle.com/solorzano/gdp-per-capita-in-us-states?select=bea-gdp-by-state.csv)
 
-
 # Findings
 
 
 # Report
 Our report can be found [here](report.html).
 
-
 # Website Navigation
+- **EDA**: Preview of data used
 - **Trend Graphs**: Graphs of our Main Interest
 - **Regression Analysis**: Detailed Analysis Report
+- **Interactive Maps**: Interactive maps that allows user customizing
 - **Resource**: Resources for Avocado Facts and Recipes
 
 # Contributors

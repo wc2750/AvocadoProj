@@ -137,6 +137,19 @@ gdp_dist %>%
     fill = "Year"
     ) 
 #+ scale_fill_brewer(palette = "Paired")
+
+gdp_dist %>% 
+  filter(Area != "United States") %>% 
+  ggplot(aes(x = year))+
+  geom_boxplot(aes(y = gdp, color = year, fill = year), alpha = .4)+
+  labs(
+    title = "United States GDP Distribution (2013-2017)",
+    x = "Year",
+    y = "GDP"
+    ) +
+  theme(
+    legend.position = "none"
+  )
 ```
 
 ```{r}

@@ -90,6 +90,7 @@ con_df =
 
 conv_color = "#F17C67"
 org_color = "#7BA23F"
+color_p = "YlGn"
 
 g <- list(
   scope = 'usa',
@@ -128,7 +129,7 @@ selectInput(
 
 ```
 
-Column {.tabset}
+Column 
 -----------------------------------------------------------------------
 
 ### Average Price
@@ -148,7 +149,7 @@ renderPlotly({
     plot_geo() %>%
     add_trace(
       z = ~Price,
-      colors = "Greens",
+      colors = color_p,
       locations = temp$state, 
       text = temp$region, 
       span = I(0),
@@ -160,6 +161,9 @@ renderPlotly({
       )
 })
 ```
+
+Column 
+-----------------------------------------------------------------------
 
 ### Total Consumption
 
@@ -178,7 +182,7 @@ renderPlotly({
     plot_geo() %>%
     add_trace(
       z = ~Volume,
-      colors = "Greens",
+      colors = color_p,
       locations = temp$state, 
       text = temp$region, 
       span = I(0),

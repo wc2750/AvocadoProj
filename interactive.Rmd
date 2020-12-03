@@ -106,6 +106,9 @@ US Overview
 
 Column {.sidebar}
 -----------------------------------------------------------------------
+
+[Home](https://wc2750.github.io/AvocadoProj/)
+
 ```{r}
 
 # Create input
@@ -128,6 +131,7 @@ selectInput(
   )
 
 ```
+
 
 Column 
 -----------------------------------------------------------------------
@@ -201,6 +205,8 @@ Avocado by Region
 Column {.sidebar}
 -----------------------------------------------------------------------
 
+[Home](https://wc2750.github.io/AvocadoProj/)
+
 ```{r for_sidebar_1}
 
 # Pull list of region
@@ -271,6 +277,8 @@ Avocado between Region
 
 Column {.sidebar}
 -----------------------------------------------------------------------
+
+[Home](https://wc2750.github.io/AvocadoProj/)
 
 ```{r for_sidebar_2}
 

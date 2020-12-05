@@ -48,7 +48,7 @@ Avocado has become a more preferable and healthy choice as a source of fat nutri
 * What is the trend of avocado price and consumption in US over the year based on different type?
 * Does the avocado price and consumption vary depending on geographical regions?
 * Which size of avocado people love the most?
-* Does GDP, which is an important indicator of people's consumption level, has any effct on the avocado price and consumption? 
+* Does GDP, which is an important indicator of people's consumption level, has any effect on the avocado price and consumption? 
 
 We want to perform EDA to the original data, visualize any interesting trend and implement a prediction model of prices. The impact of GDP on local price and consumption of avocado will also be assessed. We also intend to include interactive visualization tool that will enable people to check on time-base or region-base information purposefully, and compare between any region of interest
 
@@ -157,5 +157,7 @@ anova(reg3)
 Although the p-value of 0.085 is small, it is higher than 0.05. Hence, with a significance level of 0.05, We failed to reject the small model without the GDP per capita predictor. Given type, year, region predictors in the model, the partial R^2^ of the GDP per capita predictor is 0.08, which means the marginal contribution of GDP per capita to the variation in the annually average price of a avocado is only 8%. Based on the cross validation, the prediction error distributions of the two models are similar. Hence, we conclude that GDP per capita is not a significant predictor of the annually average price of a avocado. Future study of the price of avocado should be better consider the other potential predictors.
 
 ## Conclusion
+
+With our trend visualization and regression analysis, we are now able to answer the questions we raised at the beginning. The trend of avocado price and consumption in US over the year indeed differs based on the type. While they share similar seasonal and yearly fluctuation patterns, conventional avocado overall has lower price and higher consumption. The avocado price and consumption vary depending on geographical regions to a certain extent, and the association is significant especially for North East, South Central, and West. We found that people from Plains, MidSouth, Great Lakes and NorthEast loves large avocado the most while people from SouthEast, SouthCental, California and West love the samll avocade most. GDP, which hypothetized as an predictor, has little impact on the avocado price and consumption, 
 
 ## Discussion 

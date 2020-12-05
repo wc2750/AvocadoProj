@@ -103,13 +103,13 @@ reg1 %>%
   knitr::kable()
 ```
 
-Based on the results of the multiple linear regression, the effect of organic type is significant with refenrence on conventional type due to a negligible p-value. And the orgnic type has a relatively large positive estimate value, indicating changes in the organic type variable are associated with positive changes in the response of quarterly average price at the population level. 
+Based on the results of the multiple linear regression, the effect of organic type is significant with reference on conventional type due to a negligible p-value. And the organic type has a relatively large positive estimate value, indicating changes in the organic type variable are associated with positive changes in the response of quarterly average price at the population level. 
 
-Since the average price of avocado is inceasing with increased year based on the previous trend plot, we consider the year as a continuous varibale. And the effect of year is significant with a p-value smaller than 0.05. 
+Since the average price of avocado is increasing with increased year based on the previous trend plot, we consider the year as a continuous variable. And the effect of year is significant with a p-value smaller than 0.05. 
 
-The effect of quarter is also significant with p-value below 0.05 based on the reference on quarter 1,and there are increasing estimates from quarter 2 to quarter 4.
+The effect of quarter is also significant with p-value below 0.05 based on the reference on quarter 1, and there are increasing estimates from quarter 2 to quarter 4.
 
-With reference on California, the effect of region is only significant for Northeast, South Central, and West. Northeast has a higher positive estimate, indicating a significantly greater influence on quarterly average price by Northeast. The estimates of South Central and West are negative, indicating a significantly negative influence on the outcome by these two regions. For the other four regions including Great Lakes, Midsouth, Plains, and Southest, their p-value is above 0.05, indicating their average prices of a quarter are not significantly different from that of california. It is also confirmed from the previous plot that the trends of these four regions are close to that of california.
+With reference on California, the effect of region is only significant for Northeast, South Central, and West. Northeast has a higher positive estimate, indicating a significantly greater influence on quarterly average price by Northeast. The estimates of South Central and West are negative, indicating a significantly negative influence on the outcome by these two regions. For the other four regions including Great Lakes, Midsouth, Plains, and Southeast, their p-value is above 0.05, indicating their average prices of a quarter are not significantly different from that of California. It is also confirmed from the previous plot that the trends of these four regions are close to that of California.
 
 The F test statistics of the model is 18.62264 with a p-value below 0.05, indicating the model is significant. The R^2^ of `r summary(reg1)$r.squared` is fairly good, accounting for 82% of variation in the response that is explained by the model.
 
@@ -119,7 +119,7 @@ To check whether our model meets the assumptions of the analysis, regression dia
 par(mfrow=c(2,2))
 plot(reg1)
 ```
-In the Residuals vs Fitted plot, the red line showing the average value of the residuals at each value of fitted value is pretty flat, and points appear to be randomly spread out about the line, indicating no discerninle non-linear trends or changes in variability. The normal QQ plot is also good where the residuals match to the diagonal line, indicating these residuals look to be normally distributed. In the leverage plot, there is no evidence of outliers due to the abscence of Cook' distance dashed line. Generally, the assumptions are all satisfied and our model is valid.
+In the Residuals vs Fitted plot, the red line showing the average value of the residuals at each value of fitted value is pretty flat, and points appear to be randomly spread out about the line, indicating no concerning non-linear trends or changes in variability. The normal QQ plot is also good where the residuals match to the diagonal line, indicating these residuals look to be normally distributed. In the leverage plot, there is no evidence of outliers due to the absence of Cook' distance dashed line. Generally, the assumptions are all satisfied and our model is valid.
 
 ## How about GDP per capita as another predictor?
 We want to test whether GDP per capita would influence the response of the average price of avocado. Since we only have the annually GDP by the 8 regions of the U.S., we decide to consider annually average price of a avocado as the outcome and remove quarter variable from the previous model. Our new null model is:

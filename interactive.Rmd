@@ -90,6 +90,7 @@ con_df =
 
 conv_color = "#F17C67"
 org_color = "#7BA23F"
+color_p = "YlGn"
 
 g <- list(
   scope = 'usa',
@@ -105,6 +106,9 @@ US Overview
 
 Column {.sidebar}
 -----------------------------------------------------------------------
+
+[Home](https://wc2750.github.io/AvocadoProj/)
+
 ```{r}
 
 # Create input
@@ -128,7 +132,8 @@ selectInput(
 
 ```
 
-Column {.tabset}
+
+Column 
 -----------------------------------------------------------------------
 
 ### Average Price
@@ -148,7 +153,7 @@ renderPlotly({
     plot_geo() %>%
     add_trace(
       z = ~Price,
-      colors = "Greens",
+      colors = color_p,
       locations = temp$state, 
       text = temp$region, 
       span = I(0),
@@ -160,6 +165,9 @@ renderPlotly({
       )
 })
 ```
+
+Column 
+-----------------------------------------------------------------------
 
 ### Total Consumption
 
@@ -178,7 +186,7 @@ renderPlotly({
     plot_geo() %>%
     add_trace(
       z = ~Volume,
-      colors = "Greens",
+      colors = color_p,
       locations = temp$state, 
       text = temp$region, 
       span = I(0),
@@ -196,6 +204,8 @@ Avocado by Region
 
 Column {.sidebar}
 -----------------------------------------------------------------------
+
+[Home](https://wc2750.github.io/AvocadoProj/)
 
 ```{r for_sidebar_1}
 
@@ -267,6 +277,8 @@ Avocado between Region
 
 Column {.sidebar}
 -----------------------------------------------------------------------
+
+[Home](https://wc2750.github.io/AvocadoProj/)
 
 ```{r for_sidebar_2}
 

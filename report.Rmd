@@ -7,16 +7,47 @@ output:
     toc: true
     toc_float: true
 ---
+```{r message = F, include = FALSE}
+library(tidyverse)
+library(modelr)
+library(mgcv)
+
+# load basic avocado dataframe
+avo_df = read_csv("data/avocado.csv") %>%
+  janitor::clean_names() %>%
+  select(-1) %>% 
+  separate(date, c("year", "month", "day"), remove = FALSE) %>% 
+  mutate(
+    year = as.integer(year),
+    month = as.integer(month),
+    day = as.integer(day)
+  ) %>% 
+  rename(
+    small = x4046,
+    large = x4225,
+    extra_large = x4770,
+  ) 
+
+# tidy avo_df for regression analysis
+reg1_df = 
+  avo_df %>%
+  filter(year != 2018,
+         region %in% c("California", "West", "Plains", "SouthCentral", "GreatLakes", "Northeast", "Midsouth", "Southeast")) %>%
+  mutate(quarter = if_else(month %in% c(1,2,3), "quarter1", if_else(month %in% c(4,5,6), "quarter2", if_else(month %in% c(7,8,9), "quarter3", "quarter4")))) %>%
+  select(year, quarter, type, region, average_price) %>%
+  group_by(year, quarter, type, region) %>%
+  summarise(quarterly_average_price = mean(average_price))
+```
 
 ## Motivation
-Avocado has become a more preferable and healthy choice as a source of fat nutrition source. According to USDA, U.S. demand for avocados has increased steadily over the past two decades. Per capita consumption of avocados has tripled since 2001 to 8 pounds per person in 2018. We believe that by looking into influential factors and trends regarding avocado prices, we could gain more insights into its consumption pattern and further predict its impact on people’s life and health.
+Avocado has become a more preferable and healthy choice as a source of fat nutrition source. According to USDA, U.S. demand for avocados has increased steadily over the past two decades. Per capita consumption of avocados has tripled since 2001 to 8 pounds per person in 2018. We believe that by looking into influential factors and trends regarding avocado prices, we could gain more insights into its consumption pattern and provide a potential reference for marketers and growers who are interested in cultivating avocado.
 
 ## Questions
 
 * What is the trend of avocado price and consumption in US over the year based on different type?
 * Does the avocado price and consumption vary depending on geographical regions?
 * Which size of avocado people love the most?
-* Does GDP, which is an important indicator of people's consumption level, has any effct on the avocado price and consumption? 
+* Does GDP, which is an important indicator of people's consumption level, has any effect on the avocado price and consumption? 
 
 We want to perform EDA to the original data, visualize any interesting trend and implement a prediction model of prices. The impact of GDP on local price and consumption of avocado will also be assessed. We also intend to include interactive visualization tool that will enable people to check on time-base or region-base information purposefully, and compare between any region of interest
 
@@ -24,17 +55,110 @@ We want to perform EDA to the original data, visualize any interesting trend and
 * `Avocado price data`: [Kaggle](https://www.kaggle.com/neuromusic/avocado-prices) 
 * `State GDP data`: [Kaggle](https://www.kaggle.com/solorzano/gdp-per-capita-in-us-states?select=bea-gdp-by-state.csv)
 
-We employed an avocado data set here compiled by Justin Kiggins who obtained the data source from [Hass Avocado Board](https://hassavocadoboard.com/). Important variables includes date, average price, total volume, volume consumption by avocado size, type and region. The dates ranges from 2015-2018, the avocado size includes small, large and extra large and the type includes conventional and organic. 
+We employed an avocado data set here compiled by Justin Kiggins who obtained the data source from [Hass Avocado Board](https://hassavocadoboard.com/). Hass Avocado has been known as the most popular avocado brand in the U.S., and so we believe the data from Hass has high representativeness of the avocado consumption pattern in the U.S.. Important variables includes date, average price, total volume, volume consumption by avocado size, type and region. The dates ranges from 2015-2018, the avocado size includes small, large and extra large and the type includes conventional and organic. 
 
 The GDP data set consists US GDP data by states for each year from 2013-2017.
 
 ## Exploratory Data Analysis 
-By plotting the avocado price over time for each type of avocado, we noticed that the organic avocado has a higher price than conventional avocado over all time. In the pie plot of consumption by type, it is obvious that the conventional avocado takes over the market, but the share of organic avocado was increasing slightly year by year. We also found that, the fluctuation of avocado prices was getting greater year by year from the plot of the avocado price over each year. A shared pattern could be observed that the prices always peaks around the third quarter of the year. By visualizing both Price vs. Time and Volume vs. Time, we noticed that the volume peak is a signal for an upcoming drop in avocado prices. By visualizing avocado price across year in US by region, we found that the average prices among all regions are growing slightly year by year, but the overall price difference remains unchanged among the eight major regions. According to the Region vs. Size bar graph, we noticed all eight regions consumed extra large avocados the least. Some regions consumed more large over small ones, but some preferred the small over large ones, which is an interesting finding.
+By plotting the avocado price over time for each type of avocado, we noticed that the organic avocado has a higher price than conventional avocado over all time. In the pie plot of consumption by type, it is obvious that the conventional avocado takes over the market, but the share of organic avocado was increasing slightly year by year. We also found that, the fluctuation of avocado prices was getting greater year by year from the plot of the avocado price over each year. A shared pattern could be observed that the prices always peaks around the third quarter of the year. By visualizing both Price vs. Time and Volume vs. Time, we noticed that the volume peak was a signal for an upcoming drop in avocado prices. By visualizing avocado price across year in US by region, we found that the average prices among all regions were growing slightly year by year, but the overall price difference remains unchanged among the eight major regions. According to the Region vs. Size bar graph, we noticed all eight regions consumed extra large avocados the least. Some regions consumed more large over small ones, but some preferred the small over large ones, which was an interesting finding.
 
-We calculated Gdp Per Capita for each region and plotted it against the average price. We found no apparent trend between these two variables. For example, California has the highest GDP per capita, but its average price is around the middle among eight regions. As for the Region GDP Per Capita vs. Avocado Consumption graph, similarly, we found no apparent trend here as well. Further inferences on GDP Per Capita are made in the regression analysis section.
+We calculated Gdp Per Capita for each region and plotted it against the average price. We found no apparent trend between these two variables. For example, California has the highest GDP per capita, but its average price was around the middle among eight regions. As for the Region GDP Per Capita vs. Avocado Consumption graph, similarly, we found no apparent trend here as well. Further inferences on GDP Per Capita were made in the regression analysis section.
 
-## Formal Analysis
+## Regression Analysis
+
+For the multiple linear regression analysis, we were interested in the association between the price of avocado and several predictors. We first checked the trends of average price of a avocado by potential predictors: type, quarter, year, and region. Based on trends plot, we find that the average price of a avocado was different by the four candidate predictors. Hence, it was reasonable to consider them as predictors in modeling. In our designed model, the outcomes were `quarterly_average_price`, which was the average price of a single avocado within a quarter of a year. The predictors considered include `type`, conventional or organic avocado, `year`, the year of observation,`quarter`, the quarter of a year (there are four quarters of a year: quarter 1 stands for Jan, Feb, Mar, quarter 2 stands for Apr, May, Jun, quarter 3 stands for Jul, Aug, Sep, quarter 4 stands for Oct, Nov, Dec) and `region`, regions of the observation (there are 8 resgions to be considered, including California, West, Plains, South Central, Great Lakes, Northeast, Midsouth, Southeast. These 8 regions compose 48 states of the U.S., except for Alaska and Hawaii).
+
+The model we intended to fit was:
+
+$$ quarterly \space average \space price = \beta_0 + \beta_1type + \beta_2year + \beta_3quarter + \beta_4 region $$
+
+```{r message = FALSE, warning = FALSE, echo=FALSE}
+# regression 1 analysis
+reg1 = lm(quarterly_average_price~type + year + quarter + region, data = reg1_df)
+
+reg1 %>%
+  broom::tidy() %>%
+  select(term, estimate, p.value) %>%
+  mutate(term = str_replace(term, "^type", "Type:"),
+         term = str_replace(term, "^quarter", "Quarter: "),
+         term = str_replace(term, "^region", "Region:")) %>% 
+  knitr::kable()
+```
+
+The results of the multiple linear regression are shown above. It turns out that the effect of organic type was significant with reference on conventional type due to a negligible p-value. And the organic type has a relatively large positive estimate value, indicating changes in the organic type variable were associated with positive changes in the response of quarterly average price at the population level. Since the average price of avocado was increasing with increased year based on the previous trend plot, we consider the year as a continuous variable. And the effect of year was significant with a p-value smaller than 0.05. The effect of quarter was also significant with p-value below 0.05 based on the reference on quarter 1, and there were increasing estimates from quarter 2 to quarter 4.
+
+With reference on California, the effect of region was only significant for Northeast, South Central, and West. Northeast has a higher positive estimate, indicating a significantly greater influence on quarterly average price by Northeast. The estimates of South Central and West were negative, indicating a significantly negative influence on the outcome by these two regions. For the other four regions including Great Lakes, Midsouth, Plains, and Southest, their p-value was above 0.05, indicating their average prices of a quarter were not significantly different from that of California. It is also confirmed from the previous plot that the trends of these four regions were close to that of California.
+
+The F test statistics of the model was 18.62264 with a p-value below 0.05, indicating the model was significant. The R^2^ of `r summary(reg1)$r.squared` was fairly good, accounting for 82% of variation in the response that is explained by the model. Regression diagnostic plots were created to check whether our model meets the assumptions of the analysis. Generally, the assumptions were all satisfied and our model is valid.
+
+We further tested whether GDP per capita would influence the response of the average price of avocado. Since we only have the annually GDP by the 8 regions of the U.S., we decide to consider annually average price of a avocado as the outcome and remove quarter variable from the previous model. Our new null model was:
+$$ annually \space average \space price = \beta_0 + \beta_1type + \beta_2year + \beta_3 region $$
+
+The alternative model with additional GDP per capita variable is :
+$$ annually \space average \space price = \beta_0 + \beta_1type + \beta_2year + \beta_3 region +\beta_4 gdp \space per \space capita $$
+
+The partial F-test for nested models was performed through ANOVA to compare the small and large models. In addition, cross validation was visualized to show the value of root-mean-squared error (RMSE). The results are shown below:
+
+```{r message = FALSE, include = FALSE}
+reg2_df = read_csv("data/avo_gdp.csv") %>%
+  select (type, year, region, average_gdp, avgp_year) %>%
+  rename(annually_average_price = avgp_year,
+         gdp_per_capita = average_gdp)
+```
+
+```{r echo=FALSE}
+# ANOVA test comparing Model 2 vs Model 3 (nested: small vs large model)
+reg2 = lm(annually_average_price~type + year + region, data = reg2_df)
+reg3 = lm(annually_average_price~type + year + region + gdp_per_capita, data = reg2_df)
+
+anova(reg2, reg3) %>%
+  tibble() %>%
+  knitr::kable()
+```
+
+```{r  fig.align = 'center', echo = FALSE}
+set.seed(111)
+# cross-validation
+cv_df = 
+  crossv_mc(reg2_df, 100) %>%
+  mutate(
+    train = map(train, as_tibble),
+    test = map(test, as_tibble)
+  )
+
+cv_df = 
+  cv_df %>%
+  mutate(
+    model2 = map(train, ~reg2),
+    model3 = map(train, ~reg3)) %>%
+  mutate(
+    rmse_model2 = map2_dbl(model2, test, ~rmse(model = .x, data = .y)),
+    rmse_model3 = map2_dbl(model3, test, ~rmse(model = .x, data = .y)))
+
+cv_df %>% 
+  select(starts_with("rmse")) %>% 
+  pivot_longer(
+    everything(),
+    names_to = "model", 
+    values_to = "rmse",
+    names_prefix = "rmse_") %>% 
+  mutate(model = fct_inorder(model)) %>%
+  mutate(model = if_else(model == "model2", "null model without GDP", "alternative model with GDP")) %>%
+  ggplot(aes(x = model, y = rmse)) + geom_violin()
+```
+
+```{r include = FALSE}
+# partial R^2^ of GDP
+anova(reg2)
+anova(reg3)
+```
+
+Although the p-value of 0.085 is small, it is higher than 0.05. Hence, with a significance level of 0.05, We failed to reject the small model without the GDP per capita predictor. Given type, year, region predictors in the model, the partial R^2^ of the GDP per capita predictor is 0.08, which means the marginal contribution of GDP per capita to the variation in the annually average price of a avocado is only 8%. Based on the cross validation, the prediction error distributions of the two models are similar. Hence, we conclude that GDP per capita is not a significant predictor of the annually average price of a avocado. Future study of the price of avocado should be better consider the other potential predictors.
 
 ## Conclusion
 
-## Discussion 
+With our trend visualization and regression analysis, we are now able to answer the questions we raised at the beginning. The trend of avocado price and consumption in the U.S. over the year indeed differs based on the type. While they share similar seasonal and yearly fluctuation patterns that the price always peaks around the third quarter of a year, conventional avocado overall has lower price and higher consumption. Another interesting finding is that the peak of avocado consumption volume is a signal for an upcoming drop in avocado price.
+
+The avocado price and consumption vary depending on geographical regions to a certain extent. With reference to Califronia, the association between region and price is significant especially for North East, South Central, and West. We found that people from Plains, MidSouth, Great Lakes and NorthEast loves large avocado the most while people from SouthEast, SouthCental, California and West love the samll avocade most. 
+
+GDP, which hypothetized as an predictor, has little impact on the avocado price. Finally, we suggest future study of avocado's price and consumption can care more on the its impact on people's health and life as avocado has been advertised to have good fat and nutrition.

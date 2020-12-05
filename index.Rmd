@@ -1,5 +1,5 @@
 ---
-title: "Avocado Price Analysis and Prediction"
+title: "Millennial Avocado Consumption Analysis"
 output: 
   html_document:
     navbar:
@@ -30,7 +30,11 @@ We want to perform EDA to the original data and implement a prediction model of 
   + The dataset including the annually GDP by the states of the U.S. between 2013 and 2017 can be accessed [here](https://www.kaggle.com/solorzano/gdp-per-capita-in-us-states?select=bea-gdp-by-state.csv)
 
 # Findings
-
+* Conventional avocado has lower price and higher consumption than organic avocado.
+* People from Plains, Midsouth, Great Lakes and Northeast loves large avocado the most while people from Southeast, Southcental, California and West love the samll avocade most.
+* Avocado price always peaks around the third quarter of the year.
+* The peak of avocado consumption volume is a signal for an upcoming drop in avocado price.
+* GDP has little impact on the avocado price.
 
 # Report
 Our report can be found [here](report.html).
